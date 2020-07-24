@@ -8,13 +8,13 @@ stickers = ["white", "yellow", "green", "blue", "red", "orange"]
 
 
 class Cube:
-    side_len = 3
-    sides = np.empty([6, side_len, side_len])
+    sideLen = 3
+    sides = np.empty([6, sideLen, sideLen])
 
     # constructor
     def __init__(self):
         for i, _ in enumerate(stickers):
-            self.sides[i, :, :] = np.full([self.side_len, self.side_len], i)
+            self.sides[i, :, :] = np.full([self.sideLen, self.sideLen], i)
 
     # print cube
 
