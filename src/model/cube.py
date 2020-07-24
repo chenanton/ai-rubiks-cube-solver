@@ -16,6 +16,14 @@ class Cube:
             self.sides[i, :, :] = np.full([self.side_len, self.side_len], i)
 
 
+    # print cube
+    def printCube(self):
+        mt = np.full((3, 3), 8)
+        print(np.concatenate((mt, self.sides[1], mt, mt), axis=1))
+        print(np.concatenate((self.sides[4], self.sides[2], self.sides[5], self.sides[3]), axis=1))
+        print(np.concatenate((mt, self.sides[0], mt, mt), axis=1))
+
+
     # ROTATIONS
 
     # rotate bottom face clockwise
@@ -117,9 +125,14 @@ class Cube:
     
     
 cube = Cube()
-print(cube.sides)
-print("\n")
+# cube.printCube()
+# print("\n")
+
 cube.rotateD()
-print(cube.sides)
-
-
+cube.printCube()
+print("\n")
+cube.rotateU()
+cube.printCube()
+print("\n")
+cube.rotateR()
+cube.printCube()
