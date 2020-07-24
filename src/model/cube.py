@@ -2,8 +2,11 @@
 
 import numpy as np
 import copy
+import matplotlib.pyplot as plt
+from matplotlib import colors
 
 stickers = ["white", "yellow", "green", "blue", "red", "orange"]
+cmap = colors.ListedColormap(stickers + ["black"])
 # moves = [rotateD, rotateDprime, rotateF, rotateFprime, rotateU, rotateUprime, rotateB, rotateBprime, rotateL, rotateLprime, rotateR, rotateRprime]
 
 
@@ -18,12 +21,26 @@ class Cube:
 
     # print cube
 
-    def printCube(self):
-        mt = np.full((3, 3), 8)
-        print(np.concatenate((mt, self.sides[1], mt, mt), axis=1))
-        print(np.concatenate(
-            (self.sides[4], self.sides[2], self.sides[5], self.sides[3]), axis=1))
-        print(np.concatenate((mt, self.sides[0], mt, mt), axis=1))
+    def plotCube(self, title="Sticker Mapping"):
+        plt.close("all")
+
+        mt = np.full((3, 3), 7)
+        top = np.concatenate((mt, self.sides[1], mt, mt), axis=1)
+        mid = np.concatenate(
+            (self.sides[4], self.sides[2], self.sides[5], self.sides[3]), axis=1)
+        bot = np.concatenate((mt, self.sides[0], mt, mt), axis=1)
+        printRepr = np.concatenate((top, mid, bot), axis=0)
+        
+        plt.imshow(printRepr, interpolation='nearest', cmap=cmap)
+        ax = plt.gca()
+        ax.axes.xaxis.set_ticklabels([])
+        ax.axes.yaxis.set_ticklabels([])
+        ax.set_xticks(np.arange(-0.5, 11.5, 1))
+        ax.set_yticks(np.arange(-0.5, 8.5, 1))
+        plt.title(title)
+        plt.tight_layout()
+        plt.grid(b=True, which='major', color='#000000', linestyle='-', linewidth=4)
+        plt.show()
 
     # ROTATIONS
 
@@ -124,14 +141,21 @@ class Cube:
 
 
 cube = Cube()
-# cube.printCube()
-# print("\n")
-
-cube.rotateD()
-cube.printCube()
-print("\n")
-cube.rotateU()
-cube.printCube()
-print("\n")
 cube.rotateR()
-cube.printCube()
+cube.rotateR()
+cube.rotateUprime()
+cube.rotateR()
+cube.rotateUprime()
+cube.rotateR()
+cube.rotateU()
+cube.rotateRprime()
+cube.rotateU()
+cube.rotateR()
+cube.rotateR()
+cube.rotateU()
+cube.rotateDprime()
+cube.rotateR()
+cube.rotateUprime()
+cube.rotateRprime()
+cube.rotateD()
+cube.plotCube()
