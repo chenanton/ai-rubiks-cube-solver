@@ -4,6 +4,7 @@ import numpy as np
 import copy
 
 stickers = ["white", "yellow", "green", "blue", "red", "orange"]
+# moves = [rotateD, rotateDprime, rotateF, rotateFprime, rotateU, rotateUprime, rotateB, rotateBprime, rotateL, rotateLprime, rotateR, rotateRprime]
 
 class Cube:
     side_len = 3
@@ -15,16 +16,48 @@ class Cube:
             self.sides[i, :, :] = np.full([self.side_len, self.side_len], i)
 
 
-    # MOVES
+    # ROTATIONS
+
+    # rotate bottom face clockwise
+    def rotateD(self):
+        self.sides[0] = np.rot90(self.sides[0])
+
+        tmp = copy.copy(self.sides[4, 2, :])
+        self.sides[4, 2, :] = copy.copy(self.sides[3, 2, :])
+        self.sides[3, 2, :] = copy.copy(self.sides[5, 2, :])
+        self.sides[5, 2, :] = copy.copy(self.sides[2, 2, :])
+        self.sides[2, 2, :] = tmp
+
+    
+    # rotate bottom face counter-clockwise
+    def rotateDprime(self):
+        for _ in range(3):
+            self.rotateD()
+
+    # rotate top face clockwise
+    def rotateU(self):
+        self.sides[1] = np.rot90(self.sides[1])
+
+        tmp = copy.copy(self.sides[4, 0, :])
+        self.sides[4, 0, :] = copy.copy(self.sides[2, 0, :])
+        self.sides[2, 0, :] = copy.copy(self.sides[5, 0, :])
+        self.sides[5, 0, :] = copy.copy(self.sides[3, 0, :])
+        self.sides[3, 0, :] = tmp
+
+    
+    # rotate top face counter-clockwise
+    def rotateUprime(self):
+        for _ in range(3):
+            self.rotateU()
 
     # rotate front face clockwise
     def rotateF(self):
         self.sides[2] = np.rot90(self.sides[2])
 
-        tmp = copy.deepcopy(self.sides[4, :, 2])
-        self.sides[4, :, 2] = copy.deepcopy(self.sides[0, 0, :])
-        self.sides[0, 0, :] = copy.deepcopy(self.sides[5, :, 0])
-        self.sides[5, :, 0] = copy.deepcopy(self.sides[1, 2, :])
+        tmp = copy.copy(self.sides[4, :, 2])
+        self.sides[4, :, 2] = copy.copy(self.sides[0, 0, :])
+        self.sides[0, 0, :] = copy.copy(self.sides[5, :, 0])
+        self.sides[5, :, 0] = copy.copy(self.sides[1, 2, :])
         self.sides[1, 2, :] = tmp
 
     # rotate front face counter-clockwise
@@ -33,9 +66,51 @@ class Cube:
             self.rotateF()
 
 
-    
+    # rotate back face clockwise
+    def rotateB(self):
+        self.sides[3] = np.rot90(self.sides[3])
+
+        tmp = copy.copy(self.sides[5, :, 2])
+        self.sides[5, :, 2] = copy.copy(self.sides[0, 2, :])
+        self.sides[0, 2, :] = copy.copy(self.sides[4, :, 0])
+        self.sides[4, :, 0] = copy.copy(self.sides[1, 0, :])
+        self.sides[1, 0, :] = tmp
+
+    # rotate back face counter-clockwise
+    def rotateBprime(self):
+        for _ in range(3):
+            self.rotateB()
+
+    # rotate left face clockwise
+    def rotateL(self):
+        self.sides[4] = np.rot90(self.sides[4])
+
+        tmp = copy.copy(self.sides[3, :, 2])
+        self.sides[3, :, 2] = copy.copy(np.flip(self.sides[0, :, 0]))
+        self.sides[0, :, 0] = copy.copy(self.sides[2, :, 0])
+        self.sides[2, :, 0] = copy.copy(self.sides[1, :, 0])
+        self.sides[1, :, 0] = np.flip(tmp)
+
+    # rotate left face counter-clockwise
+    def rotateLprime(self):
+        for _ in range(3):
+            self.rotateL()
 
 
+    # rotate right face clockwise
+    def rotateR(self):
+        self.sides[5] = np.rot90(self.sides[5])
+
+        tmp = copy.copy(self.sides[2, :, 2])
+        self.sides[2, :, 2] = copy.copy(self.sides[0, :, 2])
+        self.sides[0, :, 2] = copy.copy(np.flip(self.sides[3, :, 0]))
+        self.sides[3, :, 0] = copy.copy(np.flip(self.sides[1, :, 2]))
+        self.sides[1, :, 2] = tmp
+
+    # rotate right face counter-clockwise
+    def rotateRprime(self):
+        for _ in range(3):
+            self.rotateR()
     
 
 
@@ -44,7 +119,7 @@ class Cube:
 cube = Cube()
 print(cube.sides)
 print("\n")
-cube.rotateF()
+cube.rotateD()
 print(cube.sides)
 
 
