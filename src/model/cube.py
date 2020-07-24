@@ -6,6 +6,7 @@ import copy
 stickers = ["white", "yellow", "green", "blue", "red", "orange"]
 # moves = [rotateD, rotateDprime, rotateF, rotateFprime, rotateU, rotateUprime, rotateB, rotateBprime, rotateL, rotateLprime, rotateR, rotateRprime]
 
+
 class Cube:
     side_len = 3
     sides = np.empty([6, side_len, side_len])
@@ -15,18 +16,19 @@ class Cube:
         for i, _ in enumerate(stickers):
             self.sides[i, :, :] = np.full([self.side_len, self.side_len], i)
 
-
     # print cube
+
     def printCube(self):
         mt = np.full((3, 3), 8)
         print(np.concatenate((mt, self.sides[1], mt, mt), axis=1))
-        print(np.concatenate((self.sides[4], self.sides[2], self.sides[5], self.sides[3]), axis=1))
+        print(np.concatenate(
+            (self.sides[4], self.sides[2], self.sides[5], self.sides[3]), axis=1))
         print(np.concatenate((mt, self.sides[0], mt, mt), axis=1))
-
 
     # ROTATIONS
 
     # rotate bottom face clockwise
+
     def rotateD(self):
         self.sides[0] = np.rot90(self.sides[0])
 
@@ -36,8 +38,8 @@ class Cube:
         self.sides[5, 2, :] = copy.copy(self.sides[2, 2, :])
         self.sides[2, 2, :] = tmp
 
-    
     # rotate bottom face counter-clockwise
+
     def rotateDprime(self):
         for _ in range(3):
             self.rotateD()
@@ -52,8 +54,8 @@ class Cube:
         self.sides[5, 0, :] = copy.copy(self.sides[3, 0, :])
         self.sides[3, 0, :] = tmp
 
-    
     # rotate top face counter-clockwise
+
     def rotateUprime(self):
         for _ in range(3):
             self.rotateU()
@@ -73,8 +75,8 @@ class Cube:
         for _ in range(3):
             self.rotateF()
 
-
     # rotate back face clockwise
+
     def rotateB(self):
         self.sides[3] = np.rot90(self.sides[3])
 
@@ -104,8 +106,8 @@ class Cube:
         for _ in range(3):
             self.rotateL()
 
-
     # rotate right face clockwise
+
     def rotateR(self):
         self.sides[5] = np.rot90(self.sides[5])
 
@@ -119,11 +121,8 @@ class Cube:
     def rotateRprime(self):
         for _ in range(3):
             self.rotateR()
-    
 
 
-    
-    
 cube = Cube()
 # cube.printCube()
 # print("\n")
