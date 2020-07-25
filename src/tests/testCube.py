@@ -12,7 +12,7 @@ class TestCube:
 
     @pytest.fixture(autouse=True)
     def setup(self):
-        self.cube = Cube()
+        self.cube1 = Cube()
 
     def testInit(self):
         for i in range(6):
