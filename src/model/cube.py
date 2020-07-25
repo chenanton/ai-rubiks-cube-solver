@@ -30,7 +30,7 @@ class Cube:
             (self.stickers[4], self.stickers[2], self.stickers[5], self.stickers[3]), axis=1)
         bot = np.concatenate((mt, self.stickers[0], mt, mt), axis=1)
         printRepr = np.concatenate((top, mid, bot), axis=0)
-        
+                                                                 
         plt.imshow(printRepr, interpolation='nearest', cmap=cmap)
         ax = plt.gca()
         ax.axes.xaxis.set_ticklabels([])
@@ -47,7 +47,7 @@ class Cube:
     # rotate bottom face clockwise
 
     def rotateD(self):
-        self.stickers[0] = np.rot90(self.stickers[0])
+        self.stickers[0] = np.rot90(self.stickers[0], axes=(1,0))
 
         tmp = copy.copy(self.stickers[4, 2, :])
         self.stickers[4, 2, :] = copy.copy(self.stickers[3, 2, :])
@@ -63,7 +63,7 @@ class Cube:
 
     # rotate top face clockwise
     def rotateU(self):
-        self.stickers[1] = np.rot90(self.stickers[1])
+        self.stickers[1] = np.rot90(self.stickers[1], axes=(1,0))
 
         tmp = copy.copy(self.stickers[4, 0, :])
         self.stickers[4, 0, :] = copy.copy(self.stickers[2, 0, :])
@@ -79,13 +79,13 @@ class Cube:
 
     # rotate front face clockwise
     def rotateF(self):
-        self.stickers[2] = np.rot90(self.stickers[2])
+        self.stickers[2] = np.rot90(self.stickers[2], axes=(1,0))
 
         tmp = copy.copy(self.stickers[4, :, 2])
         self.stickers[4, :, 2] = copy.copy(self.stickers[0, 0, :])
-        self.stickers[0, 0, :] = copy.copy(self.stickers[5, :, 0])
+        self.stickers[0, 0, :] = copy.copy(np.flip(self.stickers[5, :, 0]))
         self.stickers[5, :, 0] = copy.copy(self.stickers[1, 2, :])
-        self.stickers[1, 2, :] = tmp
+        self.stickers[1, 2, :] = np.flip(tmp)
 
     # rotate front face counter-clockwise
     def rotateFprime(self):
@@ -95,12 +95,12 @@ class Cube:
     # rotate back face clockwise
 
     def rotateB(self):
-        self.stickers[3] = np.rot90(self.stickers[3])
+        self.stickers[3] = np.rot90(self.stickers[3], axes=(1,0))
 
         tmp = copy.copy(self.stickers[5, :, 2])
-        self.stickers[5, :, 2] = copy.copy(self.stickers[0, 2, :])
+        self.stickers[5, :, 2] = copy.copy(np.flip(self.stickers[0, 2, :]))
         self.stickers[0, 2, :] = copy.copy(self.stickers[4, :, 0])
-        self.stickers[4, :, 0] = copy.copy(self.stickers[1, 0, :])
+        self.stickers[4, :, 0] = copy.copy(np.flip(self.stickers[1, 0, :]))
         self.stickers[1, 0, :] = tmp
 
     # rotate back face counter-clockwise
@@ -110,7 +110,7 @@ class Cube:
 
     # rotate left face clockwise
     def rotateL(self):
-        self.stickers[4] = np.rot90(self.stickers[4])
+        self.stickers[4] = np.rot90(self.stickers[4], axes=(1,0))
 
         tmp = copy.copy(self.stickers[3, :, 2])
         self.stickers[3, :, 2] = copy.copy(np.flip(self.stickers[0, :, 0]))
@@ -126,7 +126,7 @@ class Cube:
     # rotate right face clockwise
 
     def rotateR(self):
-        self.stickers[5] = np.rot90(self.stickers[5])
+        self.stickers[5] = np.rot90(self.stickers[5], axes=(1,0))
 
         tmp = copy.copy(self.stickers[2, :, 2])
         self.stickers[2, :, 2] = copy.copy(self.stickers[0, :, 2])
@@ -141,23 +141,23 @@ class Cube:
 
 
 cube = Cube()
-# cube.rotateF()
 
-# cube.rotateR()
-# cube.rotateR()
-# cube.rotateUprime()
-# cube.rotateR()
-# cube.rotateUprime()
-# cube.rotateR()
-# cube.rotateU()
-# cube.rotateRprime()
-# cube.rotateU()
-# cube.rotateR()
-# cube.rotateR()
-# cube.rotateU()
-# cube.rotateDprime()
-# cube.rotateR()
-# cube.rotateUprime()
-# cube.rotateRprime()
-# cube.rotateD()
+cube.rotateR()
+cube.rotateR()
+cube.rotateUprime()
+cube.rotateR()
+cube.rotateUprime()
+cube.rotateR()
+cube.rotateU()
+cube.rotateRprime()
+cube.rotateU()
+cube.rotateR()
+cube.rotateR()
+cube.rotateU()
+cube.rotateDprime()
+cube.rotateR()
+cube.rotateUprime()
+cube.rotateRprime()
+cube.rotateD()
+
 cube.plotCube()
