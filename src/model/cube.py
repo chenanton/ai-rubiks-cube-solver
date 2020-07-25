@@ -12,12 +12,34 @@ cmap = colors.ListedColormap(stickerColors + ["black"])
 
 class Cube:
     sideLen = 3
-    stickers = np.empty([6, sideLen, sideLen])
+    stickers = None
+    turnMap = {}
 
     # constructor
     def __init__(self):
+        self.stickers = np.empty([6, self.sideLen, self.sideLen])
         for i, _ in enumerate(stickerColors):
             self.stickers[i, :, :] = np.full([self.sideLen, self.sideLen], i)
+        self.turnMap = {
+            "D": self.rotateD,
+            "D'": self.rotateDprime,
+            "U": self.rotateU,
+            "U'": self.rotateUprime,
+            "F": self.rotateF,
+            "F'": self.rotateFprime,
+            "B": self.rotateB,
+            "B'": self.rotateBprime,
+            "L": self.rotateL,
+            "L'": self.rotateLprime,
+            "R": self.rotateR,
+            "R'": self.rotateRprime,
+        }
+
+    def __call__(self, rotation):
+        try:
+            self.turnMap[rotation]()
+        except KeyError:
+            print("That turn doesn't exist!")
 
     # print cube
 
@@ -30,7 +52,7 @@ class Cube:
             (self.stickers[4], self.stickers[2], self.stickers[5], self.stickers[3]), axis=1)
         bot = np.concatenate((mt, self.stickers[0], mt, mt), axis=1)
         printRepr = np.concatenate((top, mid, bot), axis=0)
-                                                                 
+
         plt.imshow(printRepr, interpolation='nearest', cmap=cmap)
         ax = plt.gca()
         ax.axes.xaxis.set_ticklabels([])
@@ -39,7 +61,8 @@ class Cube:
         ax.set_yticks(np.arange(-0.5, 8.5, 1))
         plt.title(title)
         plt.tight_layout()
-        plt.grid(b=True, which='major', color='#000000', linestyle='-', linewidth=4)
+        plt.grid(b=True, which='major', color='#000000',
+                 linestyle='-', linewidth=4)
         plt.show()
 
     # ROTATIONS
@@ -47,7 +70,7 @@ class Cube:
     # rotate bottom face clockwise
 
     def rotateD(self):
-        self.stickers[0] = np.rot90(self.stickers[0], axes=(1,0))
+        self.stickers[0] = np.rot90(self.stickers[0], axes=(1, 0))
 
         tmp = copy.copy(self.stickers[4, 2, :])
         self.stickers[4, 2, :] = copy.copy(self.stickers[3, 2, :])
@@ -63,7 +86,7 @@ class Cube:
 
     # rotate top face clockwise
     def rotateU(self):
-        self.stickers[1] = np.rot90(self.stickers[1], axes=(1,0))
+        self.stickers[1] = np.rot90(self.stickers[1], axes=(1, 0))
 
         tmp = copy.copy(self.stickers[4, 0, :])
         self.stickers[4, 0, :] = copy.copy(self.stickers[2, 0, :])
@@ -79,7 +102,7 @@ class Cube:
 
     # rotate front face clockwise
     def rotateF(self):
-        self.stickers[2] = np.rot90(self.stickers[2], axes=(1,0))
+        self.stickers[2] = np.rot90(self.stickers[2], axes=(1, 0))
 
         tmp = copy.copy(self.stickers[4, :, 2])
         self.stickers[4, :, 2] = copy.copy(self.stickers[0, 0, :])
@@ -95,7 +118,7 @@ class Cube:
     # rotate back face clockwise
 
     def rotateB(self):
-        self.stickers[3] = np.rot90(self.stickers[3], axes=(1,0))
+        self.stickers[3] = np.rot90(self.stickers[3], axes=(1, 0))
 
         tmp = copy.copy(self.stickers[5, :, 2])
         self.stickers[5, :, 2] = copy.copy(np.flip(self.stickers[0, 2, :]))
@@ -110,7 +133,7 @@ class Cube:
 
     # rotate left face clockwise
     def rotateL(self):
-        self.stickers[4] = np.rot90(self.stickers[4], axes=(1,0))
+        self.stickers[4] = np.rot90(self.stickers[4], axes=(1, 0))
 
         tmp = copy.copy(self.stickers[3, :, 2])
         self.stickers[3, :, 2] = copy.copy(np.flip(self.stickers[0, :, 0]))
@@ -126,7 +149,7 @@ class Cube:
     # rotate right face clockwise
 
     def rotateR(self):
-        self.stickers[5] = np.rot90(self.stickers[5], axes=(1,0))
+        self.stickers[5] = np.rot90(self.stickers[5], axes=(1, 0))
 
         tmp = copy.copy(self.stickers[2, :, 2])
         self.stickers[2, :, 2] = copy.copy(self.stickers[0, :, 2])
@@ -142,22 +165,22 @@ class Cube:
 
 cube = Cube()
 
-cube.rotateR()
-cube.rotateR()
-cube.rotateUprime()
-cube.rotateR()
-cube.rotateUprime()
-cube.rotateR()
-cube.rotateU()
-cube.rotateRprime()
-cube.rotateU()
-cube.rotateR()
-cube.rotateR()
-cube.rotateU()
-cube.rotateDprime()
-cube.rotateR()
-cube.rotateUprime()
-cube.rotateRprime()
-cube.rotateD()
+cube("R")
+cube("R")
+cube("U'")
+cube("R")
+cube("U'")
+cube("R")
+cube("U")
+cube("R'")
+cube("U")
+cube("R")
+cube("R")
+cube("U")
+cube("D'")
+cube("R")
+cube("U'")
+cube("R'")
+cube("D")
 
 cube.plotCube()
