@@ -8,7 +8,6 @@ from matplotlib import colors
 
 stickerColors = ["white", "yellow", "green", "blue", "red", "orange"]
 cmap = colors.ListedColormap(stickerColors + ["black"])
-# moves = [rotateD, rotateDprime, rotateF, rotateFprime, rotateU, rotateUprime, rotateB, rotateBprime, rotateL, rotateLprime, rotateR, rotateRprime]
 
 
 class Cube:
@@ -43,7 +42,6 @@ class Cube:
             print("That turn doesn't exist!")
 
     # print cube
-
     def plotCube(self, title="Sticker Mapping"):
         plt.close("all")
 
