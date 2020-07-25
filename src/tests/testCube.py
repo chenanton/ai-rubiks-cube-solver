@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import sys
 
-from src.model.cube import Cube
+from model.cube import Cube
 
 
 # run test: py.test src/tests/testCube.py
