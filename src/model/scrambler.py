@@ -38,6 +38,7 @@ def randomScramble():
         scramble.append(index)
         prevMoveCnt = 1 if prevMove != index else prevMoveCnt + 1
         prevMove = index
+        
     # cube.plotCube(title="Solution: " + " ".join([turns[x] for x in scramble]))
     return scramble, cube.stickers
 
