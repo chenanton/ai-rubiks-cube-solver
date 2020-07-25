@@ -21,6 +21,9 @@ def getRandomScrambles(iterations):
         stickerList.append(stickers)
     return scrambles, stickerList
 
+def getSolutions(scrambles):
+    return [getSolution(s) for s in scrambles]
+
 
 def randomScramble():
     cube = Cube()

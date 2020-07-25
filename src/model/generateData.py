@@ -1,11 +1,28 @@
-from scrambler import getRandomScrambles, getSolution, maxScrambleLen, turns  # pylint: disable=import-error
-from cube import stickerColors # pylint: disable=import-error
+from scrambler import getRandomScrambles, getSolutions, maxScrambleLen, turns  # pylint: disable=import-error
+from cube import stickerColors  # pylint: disable=import-error
 import numpy as np
 
 # Functions related to generating, formatting, and saving scrambles and corresponding solutions
 
 turnLen = len(turns)
 stickerLen = len(stickerColors)
+
+inputFile = "src/data/features.npy"
+outputFile = "src/data/labels.npy"
+
+# Generates specified amount of training examples and saves it to specified files
+def generateData(m, inputFile="src/data/features.npy", outputFile="src/data/labels.npy"):
+    scrambles, stickers = getRandomScrambles(m)
+    solutions = getSolutions(scrambles)
+
+    solutionsPadded = padScrambles(solutions)
+    stickersFlat = flattenStickers(stickers)
+
+    solutionsOH = toSparse(solutionsPadded, turnLen)
+    stickersOH = toSparse(stickersFlat, stickerLen)
+
+    np.save(inputFile, stickersOH)
+    np.save(outputFile, solutionsOH)
 
 
 # Pads each scramble in scrambles to maximum scramble length; returns np array
@@ -33,13 +50,17 @@ def flattenStickers(stickers):
     return stickers.reshape(stickers.shape[0], -1)
 
 
+generateData(100)
 
-scrambles, stickers = getRandomScrambles(2)
-# for s in scrambles:
-#     print(s)
-# padded = padScrambles(scrambles)
-# sparse = toSparseScrambles(padded)
-# print(sparse)
+# with np.load(inputFile) as XTrain, np.load(outputFile) as YTrain:
+#     print(XTrain.shape)
+#     print(YTrain.shape)
 
-print(stickers)
-print(toSparse(flattenStickers(stickers), numClasses=len(turns)))
+XTrain = np.load(inputFile)
+YTrain = np.load(outputFile)
+
+print("X shape: ")
+print(XTrain.shape)
+
+print("Y shape: ")
+print(YTrain.shape)

@@ -3,7 +3,9 @@ import numpy as np
 import sys
 
 from src.model.cube import Cube
-from src.model import scrambler, generateData
+
+import src.model.scrambler as scrambler
+# from src.model.generateData import padScrambles, toSparse, flattenStickers
 
 # run test: py.test src/tests/testGenerateData.py
 
@@ -18,8 +20,9 @@ class TestGenerateData:
 
     @pytest.fixture(autouse=True)
     def setup(self):
-        singleScramble, singleStickers = scrambler.getRandomScrambles(1)
-        multipleScramble, multipleStickers = scrambler.getRandomScrambles(5)
+        pass
+        # singleScramble, singleStickers = scrambler.getRandomScrambles(1)
+        # multipleScramble, multipleStickers = scrambler.getRandomScrambles(5)
 
 
     def testPadScramblesSingle(self):
