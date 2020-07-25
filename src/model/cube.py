@@ -1,8 +1,9 @@
 # This file represents the model for the cube. The center white piece is always facing the bottom, and the center green piece is always facing forward.
 
-import numpy as np
 import copy
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import colors
 
 stickerColors = ["white", "yellow", "green", "blue", "red", "orange"]
@@ -163,24 +164,24 @@ class Cube:
             self.rotateR()
 
 
-cube = Cube()
+# cube = Cube()
 
-cube("R")
-cube("R")
-cube("U'")
-cube("R")
-cube("U'")
-cube("R")
-cube("U")
-cube("R'")
-cube("U")
-cube("R")
-cube("R")
-cube("U")
-cube("D'")
-cube("R")
-cube("U'")
-cube("R'")
-cube("D")
+# cube("R")
+# cube("R")
+# cube("U'")
+# cube("R")
+# cube("U'")
+# cube("R")
+# cube("U")
+# cube("R'")
+# cube("U")
+# cube("R")
+# cube("R")
+# cube("U")
+# cube("D'")
+# cube("R")
+# cube("U'")
+# cube("R'")
+# cube("D")
 
-cube.plotCube()
+# cube.plotCube()
