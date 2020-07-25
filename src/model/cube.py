@@ -35,6 +35,7 @@ class Cube:
             "R'": self.rotateRprime,
         }
 
+    # __call__ used for rotations
     def __call__(self, rotation):
         try:
             self.turnMap[rotation]()
@@ -67,7 +68,6 @@ class Cube:
     # ROTATIONS
 
     # rotate bottom face clockwise
-
     def rotateD(self):
         self.stickers[0] = np.rot90(self.stickers[0], axes=(1, 0))
 
@@ -78,7 +78,6 @@ class Cube:
         self.stickers[2, 2, :] = tmp
 
     # rotate bottom face counter-clockwise
-
     def rotateDprime(self):
         for _ in range(3):
             self.rotateD()
@@ -94,7 +93,6 @@ class Cube:
         self.stickers[3, 0, :] = tmp
 
     # rotate top face counter-clockwise
-
     def rotateUprime(self):
         for _ in range(3):
             self.rotateU()
@@ -115,7 +113,6 @@ class Cube:
             self.rotateF()
 
     # rotate back face clockwise
-
     def rotateB(self):
         self.stickers[3] = np.rot90(self.stickers[3], axes=(1, 0))
 
@@ -146,7 +143,6 @@ class Cube:
             self.rotateL()
 
     # rotate right face clockwise
-
     def rotateR(self):
         self.stickers[5] = np.rot90(self.stickers[5], axes=(1, 0))
 
@@ -160,26 +156,3 @@ class Cube:
     def rotateRprime(self):
         for _ in range(3):
             self.rotateR()
-
-
-# cube = Cube()
-
-# cube("R")
-# cube("R")
-# cube("U'")
-# cube("R")
-# cube("U'")
-# cube("R")
-# cube("U")
-# cube("R'")
-# cube("U")
-# cube("R")
-# cube("R")
-# cube("U")
-# cube("D'")
-# cube("R")
-# cube("U'")
-# cube("R'")
-# cube("D")
-
-# cube.plotCube()
