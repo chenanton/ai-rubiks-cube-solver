@@ -1,5 +1,11 @@
 {
     "python.pythonPath": "C:\\ProgramData\\Miniconda3\\envs\\tensorflow\\python.exe",
+    "python.testing.pytestArgs": [
+        "src"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
     // "python.autoComplete.extraPaths": [
     //     "~/src/model",
     // ],
