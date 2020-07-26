@@ -29,9 +29,9 @@ def generateData(m, inputFile="data/features.npy", outputFile="data/labels.npy")
 # Output dimensions: (number of scrambles, maximum scramble length)
 def padScrambles(scrambles, maxScrambleLen=25):
     fillInt = -1   # empty character to be ignored once turned into sparse tensor
-    res = np.full((len(scrambles), maxScrambleLen), fill_value=fillInt)
+    res = np.full((len(scrambles), maxScrambleLen), fill_value=fillInt, dtype="float32")
     for i in range(len(scrambles)):
-        res[i, :len(scrambles[i])] = np.array(scrambles[i], dtype="int32")
+        res[i, :len(scrambles[i])] = np.array(scrambles[i], dtype="float32")
     return res
 
 
@@ -40,7 +40,7 @@ def padScrambles(scrambles, maxScrambleLen=25):
 #   numClasses = turnLen if mat == scrambles
 #   numClasses = stickerLen if mat == stickers
 def toSparse(mat, numClasses):
-    return (np.arange(numClasses) == mat[..., None]).astype(int)
+    return (np.arange(numClasses) == mat[..., None]).astype("float32")
 
 
 # Flattens sticker patterns; changes stickers to np array
