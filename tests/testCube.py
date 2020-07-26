@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import sys
 
-from src.model.cube import Cube
+from model.cube import Cube
 
 
 # run test: py.test src/tests/testCube.py
@@ -12,7 +12,7 @@ class TestCube:
 
     @pytest.fixture(autouse=True)
     def setup(self):
-        self.cube = Cube()
+        self.cube1 = Cube()
 
     def testInit(self):
         for i in range(6):
