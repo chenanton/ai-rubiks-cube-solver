@@ -1,5 +1,5 @@
 from scrambler import getRandomScrambles, getSolutions, maxScrambleLen, turns  # pylint: disable=import-error
-from cube import stickerColors  # pylint: disable=import-error
+from cube import stickerColors # pylint: disable=import-error 
 import numpy as np
 
 # Functions related to generating, formatting, and saving scrambles and corresponding solutions
@@ -50,13 +50,14 @@ def flattenStickers(stickers):
     return stickers.reshape(stickers.shape[0], -1)
 
 
-generateData(1000)
+if __name__ == "__main__":
+    generateData(1000)
 
-XTrain = np.load(inputFile)
-YTrain = np.load(outputFile)
+    XTrain = np.load(inputFile)
+    YTrain = np.load(outputFile)
 
-print("X shape: ")
-print(XTrain.shape)
+    print("X shape: ")
+    print(XTrain.shape)
 
-print("Y shape: ")
-print(YTrain.shape)
+    print("Y shape: ")
+    print(YTrain.shape)
