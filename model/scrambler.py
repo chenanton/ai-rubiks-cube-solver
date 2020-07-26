@@ -51,13 +51,3 @@ def getSolution(scramble):
     cp.reverse()
     return [x + (1 if x % 2 == 0 else -1) for x in cp]
 
-
-if __name__ == "__main__":
-    scramble, _ = randomScramble()
-    solution = getSolution(scramble)
-
-    # scramble = [turns[x] for x in scramble]
-    # solution = [turns[x] for x in solution]
-
-    print(scramble)
-    print(solution)
