@@ -7,11 +7,11 @@ import numpy as np
 turnLen = len(turns)
 stickerLen = len(stickerColors)
 
-inputFile = "src/data/features.npy"
-outputFile = "src/data/labels.npy"
+inputFile = "data/features.npy"
+outputFile = "data/labels.npy"
 
 # Generates specified amount of training examples and saves it to specified files
-def generateData(m, inputFile="src/data/features.npy", outputFile="src/data/labels.npy"):
+def generateData(m, inputFile="data/features.npy", outputFile="data/labels.npy"):
     scrambles, stickers = getRandomScrambles(m)
     solutions = getSolutions(scrambles)
 
@@ -50,11 +50,7 @@ def flattenStickers(stickers):
     return stickers.reshape(stickers.shape[0], -1)
 
 
-generateData(100)
-
-# with np.load(inputFile) as XTrain, np.load(outputFile) as YTrain:
-#     print(XTrain.shape)
-#     print(YTrain.shape)
+generateData(1000)
 
 XTrain = np.load(inputFile)
 YTrain = np.load(outputFile)

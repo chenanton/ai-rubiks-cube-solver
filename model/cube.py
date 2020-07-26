@@ -156,10 +156,3 @@ class Cube:
     def rotateRprime(self):
         for _ in range(3):
             self.rotateR()
-
-if __name__ == "__main__":
-    c = Cube()
-    c.plotCube(title="Solved")
-
-    c("D'")
-    c.plotCube(title="D'")
