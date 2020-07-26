@@ -36,7 +36,7 @@ With more than **43 quintillion unique combinations**, a scrambled Rubik's Cube 
 
 What's even more impressive are "speedcubers" who can solve a scrambled cube in less than 10 seconds! Techniques such as the [Beginner's Method](https://en.wikipedia.org/wiki/Layer_by_Layer), [CFOP](https://en.wikipedia.org/wiki/CFOP_method), or even [Roux](https://en.wikipedia.org/wiki/Speedcubing#Roux_method) work by memorizing many combinations of turns (known as algorithms) and when to use them.
 
-However, we're not here to learn how to solve a Rubik's cube - we want a machine to learn how to solve it. Can we harness the power of machine learning to solve a Rubik's Cube?
+However, we're not here to memorize a bunch of algorithms - we want a machine to learn how to solve it. Can we harness the power of machine learning to solve a Rubik's Cube?
 
 ## Tools
 
