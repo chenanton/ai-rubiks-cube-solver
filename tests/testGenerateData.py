@@ -2,10 +2,9 @@ import pytest
 import numpy as np
 
 import sys
-# from src.model.cube import Cube
+from model.cube import Cube
 
-# import src.model.scrambler as scrambler
-# from src.model.generateData import padScrambles, toSparse, flattenStickers
+# from model.generateData import padScrambles, toSparse, flattenStickers
 
 # run test: py.test src/tests/testGenerateData.py
 
