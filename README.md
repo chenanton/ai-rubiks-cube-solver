@@ -8,7 +8,7 @@
 <h2 align="center" >rubiks-cube-solver</h2>
 
   <p align="center">
-    A program which generates learned cube rotations, solving any scrambled Rubik's Cube.
+    A program which generates machine-learned cube rotations, solving any scrambled Rubik's Cube.
     <br />
     <a href="https://github.com/azychen/rubiks-cube-solver">View Demo</a>
     ·
@@ -23,7 +23,6 @@
 
 * [Background](#background)
 * [Outline](#outline)
-* [Usage](#usage)
 * [Roadmap](#roadmap)
   * [Cube Model](#cube-model)
   * [Scrambling](#scrambling)
@@ -39,7 +38,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-With more than **43 quintillion unique combinations**, a scrambled Rubik's Cube seems impossible to solve. Yet with a simple guide, anyone can learn how to solve it. My first solve attempt took 30 minutes, and within a week, it was down to 5 minutes. 
+With more than **43 quintillion unique combinations**, a scrambled Rubik's Cube seems impossible to solve. Yet with a simple guide, anyone can learn how to solve it. My first solve attempt took me 30 minutes, and within a week, that time was down to 5 minutes. 
 
 What's even more impressive are "speedcubers" who can solve a scrambled cube in [less than 10 seconds!](https://www.youtube.com/watch?v=NevGDFBfQGw) They use techniques such as [CFOP](https://www.speedsolving.com/wiki/index.php/CFOP_method), [Roux](https://www.speedsolving.com/wiki/index.php/Roux_method), or [ZZ](https://www.speedsolving.com/wiki/index.php/ZZ_method), which work by memorizing many combinations of turns (known as algorithms) and when to use them.
 
@@ -125,6 +124,6 @@ model = keras.Sequential([
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 ```
 
-## Results
+<!-- ## Results
 
-## Conclusion
+## Conclusion -->
