@@ -5,7 +5,7 @@
         <img src="assets/images/logo.png" alt="Logo" width="180" >
     </a>
 
-<h2 align="center" >rubiks-cube-solver</h2>
+<h2 align="center" >Rubik's Cube Solver</h2>
 
   <p align="center">
     A program which generates machine-learned cube rotations, solving any scrambled Rubik's Cube.
