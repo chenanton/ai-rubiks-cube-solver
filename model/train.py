@@ -38,11 +38,11 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 
 
 # Hyperparameters
-trainingSize = 10000
+trainingSize = 50000
 maxLen = 54
 hiddenSize = 128
 batchSize = 512
-epochs = 3
+epochs = 5
 
 
 # Defines model layers, compiles model
@@ -73,6 +73,6 @@ if __name__ == "__main__":
     model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
     model.fit(XTrain, YTrain, epochs=epochs, batch_size=batchSize)
     model.summary()
-    # model.save(filepath="data/model.hdf5", save_format="h5")
+    model.save(filepath="data/model.hdf5", save_format="h5")
 
 

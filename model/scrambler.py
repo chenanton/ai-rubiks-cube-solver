@@ -5,13 +5,14 @@ import copy
 
 from cube import Cube  # pylint: disable=import-error
 
-minScrambleLen = 15
+minScrambleLen = 20
 maxScrambleLen = 25
 
 turns = ["D", "D'", "U", "U'", "F", "F'", "B", "B'", "L", "L'", "R", "R'"]
 # turnsToIndex = dict(zip(turns, list(range(len(turns)))))
 
 
+# Returns a list of random scrambles
 def getRandomScrambles(iterations):
     scrambles = []
     stickerList = []
@@ -21,10 +22,13 @@ def getRandomScrambles(iterations):
         stickerList.append(stickers)
     return scrambles, stickerList
 
+
+# Converts a list of scrambles into the corresponding list of solutions
 def getSolutions(scrambles):
     return [getSolution(s) for s in scrambles]
 
 
+# Generates a single random scramble
 def randomScramble():
     cube = Cube()
     scramble = []
