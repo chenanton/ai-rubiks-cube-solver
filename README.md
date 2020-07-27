@@ -50,25 +50,30 @@ However, we're not here to memorize a bunch of algorithms - **we want a machine 
 * Weight learning is handled with [**TensorFlow**](https://www.tensorflow.org/).
 * Tensor operations are handled with [**NumPy**](https://numpy.org/).
 * Supplementary plotting is done with [**Matplotlib**](https://matplotlib.org/).
+* Unit testing is done with [**PyTest**](https://docs.pytest.org/en/latest/).
 
 <!-- ROADMAP -->
 ## Roadmap
 
 <!-- CUBE MODEL -->
 ### Cube Model
+
 The stickers on the cube are represented by a 6 x 3 x 3 tensor, representing the six sides with 3 rows and 3 columns of stickers. Each sticker is represented as an integer from 0 to 5. To rotate a face clockwise, the corresponding side's 3 x 3 face must be rotated clockwise. Additionally, the 12 stickers on the 4 adjacent sides must also be moved to the correct position. This applies similarly to a counter-clockwise rotation. Here's an example:
 
 
 ```python
-# Example: class method to rotate bottom face (D)
+# Example: class method to rotate bottom face clockwise (D)
 def rotateD(self):
-        self.stickers[0] = np.rot90(self.stickers[0], axes=(1, 0))
 
-        tmp = copy.copy(self.stickers[4, 2, :])
-        self.stickers[4, 2, :] = copy.copy(self.stickers[3, 2, :])
-        self.stickers[3, 2, :] = copy.copy(self.stickers[5, 2, :])
-        self.stickers[5, 2, :] = copy.copy(self.stickers[2, 2, :])
-        self.stickers[2, 2, :] = tmp
+    # Rotate corresponding face 
+    self.stickers[0] = np.rot90(self.stickers[0], axes=(1, 0))
+
+    # Rotate stickers of adjacent faces
+    tmp = copy.copy(self.stickers[4, 2, :])
+    self.stickers[4, 2, :] = copy.copy(self.stickers[3, 2, :])
+    self.stickers[3, 2, :] = copy.copy(self.stickers[5, 2, :])
+    self.stickers[5, 2, :] = copy.copy(self.stickers[2, 2, :])
+    self.stickers[2, 2, :] = tmp
 ```
 
 
@@ -77,10 +82,22 @@ def rotateD(self):
 <!-- SCRAMBLING -->
 ### Scrambling
 
+After implementing both clockwise and counter-clockwise rotations for all 6 sides (12 moves total), we can start scrambling the cube. From various sources online, a typical scramble given in a speedcubing tournament can range from 20 to 25 rotations. More specifically, moves must not cancel each other out (e.g. a clockwise rotation followed immediately by a counter-clockwise rotation on the same face), and must be optimal (e.g. 4 clockwise rotations of the same face does not change anything).
 
+This program stores a scramble as a 20 to 25 dimensional vector of integers from 0 to 11, which index each unique cube rotation, padded to a length of 25 by a sentinel value. To store *n* scrambles, an *n* x 25 vector is used. 
+```python
+# List of turns, with the letter representing the face turned clockwise
+# Prime (') marks a counter-clockwise rotation
+turns = ["D", "D'", "U", "U'", "F", "F'", "B", "B'", "L", "L'", "R", "R'"]
+```
 <!-- GENERATING DATA -->
 ### Generating Data
 
+One key concept used to generate a solution is to realize that a solution to a scrambled cube is to simply backtrack on the moves used scramble the cube. For instance:
+```python
+scramble = ["D", "D", "R'", "F"] # A short example scramble
+solution = ["F'", "R", "D'", "D'"] # Its corresponding solution
+```
 
 <!-- TRAINING MODEL -->
 ### Training Model
