@@ -4,6 +4,7 @@ from tensorflow import keras
 
 from generateData import generateData, generateDataMulti, inputFileBase, outputFileBase, fileExt
 
+import json
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -38,14 +39,15 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 
 
 # Hyperparameters
-trainingSize = 100000
+trainingSize = 1000
 batchSize = 512
-epochs = 10
-numFiles = 20
+epochs = 5
+numFiles = 10
 
 maxLen = 54
 hiddenSize = 128
 
+historyPath = "data/histories/history"
 
 # Defines model layers, compiles model
 def createModel(Tx, Ty, inputSize, outputSize, na=128, ns=128):
@@ -63,7 +65,7 @@ def createModel(Tx, Ty, inputSize, outputSize, na=128, ns=128):
 
 # Trains model
 def trainModel():
-    # generateDataMulti(trainingSize, numFiles)
+    generateDataMulti(trainingSize, numFiles)
 
     # model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
     model = keras.models.load_model("data/model.hdf5")
@@ -72,9 +74,12 @@ def trainModel():
         Xi, Yi = loadData(i)
         (XTrain, YTrain), (XDev, YDev), (XTest,
                                          YTest) = partitionData(Xi, Yi, 98, 1, 1)
-        model.fit(XTrain, YTrain, epochs=epochs,
+        historyModel = model.fit(XTrain, YTrain, epochs=epochs,
                   batch_size=batchSize, validation_data=(XDev, YDev))
         model.evaluate(XTest, YTest)
+
+        historyDict = historyModel.history
+        json.dump(historyDict, open(historyPath + str(i) + ".json", 'w'))
 
     model.summary()
     model.save(filepath="data/model.hdf5", save_format="h5")
