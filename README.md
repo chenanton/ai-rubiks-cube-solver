@@ -22,8 +22,13 @@
 ## Table of Contents
 
 * [Background](#project-background)
+* [Outline](#outline)
 * [Usage](#usage)
 * [Roadmap](#roadmap)
+  * [Cube Model](#cube-model)
+  * [Scrambling](#scrambling)
+  * [Generating Data](#generating-data)
+  * [Training Model](#training-model)
 * [Contact](#contact)
 * [Acknowledgements](#acknowledgements)
 
@@ -36,10 +41,30 @@ With more than **43 quintillion unique combinations**, a scrambled Rubik's Cube 
 
 What's even more impressive are "speedcubers" who can solve a scrambled cube in less than 10 seconds! Techniques such as the [Beginner's Method](https://en.wikipedia.org/wiki/Layer_by_Layer), [CFOP](https://en.wikipedia.org/wiki/CFOP_method), or even [Roux](https://en.wikipedia.org/wiki/Speedcubing#Roux_method) work by memorizing many combinations of turns (known as algorithms) and when to use them.
 
-However, we're not here to memorize a bunch of algorithms - we want a machine to learn how to solve it. Can we harness the power of machine learning to solve a Rubik's Cube?
+However, we're not here to memorize a bunch of algorithms - **we want a machine to learn how to solve it.** Can we harness the power of machine learning to solve a Rubik's Cube?
 
-## Tools
+<!-- OUTLINE -->
+## Outline
 
-* [Tensorflow](https://www.tensorflow.org/)
-* [NumPy](https://numpy.org/)
-* [Matplotlib](https://matplotlib.org/)
+* This program is written in [**Python**](https://www.python.org/).
+* Weight learning is handled with the [**TensorFlow**](https://www.tensorflow.org/) machine learning framework.
+* Tensor operations are handled with [**NumPy**](https://numpy.org/).
+* Supplementary plotting is done with [**Matplotlib**](https://matplotlib.org/).
+
+<!-- ROADMAP -->
+## Roadmap
+
+<!-- CUBE MODEL -->
+### Cube Model
+
+
+<!-- SCRAMBLING -->
+### Scrambling
+
+
+<!-- GENERATING DATA -->
+### Generating Data
+
+
+<!-- TRAINING MODEL -->
+### Training Model
