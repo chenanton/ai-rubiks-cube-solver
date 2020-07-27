@@ -20,7 +20,6 @@ def generateDataMulti(totalExamples, totalFiles=1):
 
 # Generates specified amount of training examples and saves it to specified files
 def generateData(m, numFiles=0):
-    print("Generating data to file no. " + str(numFiles))
     scrambles, stickers = getRandomScrambles(m)
     solutions = getSolutions(scrambles)
 
@@ -32,6 +31,9 @@ def generateData(m, numFiles=0):
 
     np.save(inputFileBase + str(numFiles) + fileExt, stickersOH)
     np.save(outputFileBase + str(numFiles) + fileExt, solutionsOH)
+
+    print("Saved data to files no. " + str(numFiles) + ".")
+
 
 
 # Pads each scramble in scrambles to maximum scramble length; returns np array

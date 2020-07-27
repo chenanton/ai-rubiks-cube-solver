@@ -38,10 +38,10 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 
 
 # Hyperparameters
-trainingSize = 1000
+trainingSize = 100000
 batchSize = 512
-epochs = 5
-numFiles = 10
+epochs = 10
+numFiles = 20
 
 maxLen = 54
 hiddenSize = 128
@@ -63,9 +63,10 @@ def createModel(Tx, Ty, inputSize, outputSize, na=128, ns=128):
 
 # Trains model
 def trainModel():
-    generateDataMulti(trainingSize, numFiles)
+    # generateDataMulti(trainingSize, numFiles)
 
-    model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
+    # model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
+    model = keras.models.load_model("data/model.hdf5")
 
     for i in range(numFiles):
         Xi, Yi = loadData(i)
