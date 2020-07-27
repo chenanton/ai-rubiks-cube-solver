@@ -21,7 +21,7 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
-* [Background](#project-background)
+* [Background](#background)
 * [Outline](#outline)
 * [Usage](#usage)
 * [Roadmap](#roadmap)
@@ -29,17 +29,19 @@
   * [Scrambling](#scrambling)
   * [Generating Data](#generating-data)
   * [Training Model](#training-model)
+* [Results](#results)
+* [Conclusion](#conclusion)
 * [Contact](#contact)
 * [Acknowledgements](#acknowledgements)
 
-<!-- PROJECT BACKGROUND -->
-## Project Background
+<!-- BACKGROUND -->
+## Background
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
 With more than **43 quintillion unique combinations**, a scrambled Rubik's Cube seems impossible to solve. Yet with a simple guide, anyone can learn how to solve it. My first solve attempt took 30 minutes, and within a week, it was down to 5 minutes. 
 
-What's even more impressive are "speedcubers" who can solve a scrambled cube in less than 10 seconds! They use techniques such as [CFOP](https://www.speedsolving.com/wiki/index.php/CFOP_method), [Roux](https://www.speedsolving.com/wiki/index.php/Roux_method), or [ZZ](https://www.speedsolving.com/wiki/index.php/ZZ_method), which work by memorizing many combinations of turns (known as algorithms) and when to use them.
+What's even more impressive are "speedcubers" who can solve a scrambled cube in [less than 10 seconds!](https://www.youtube.com/watch?v=NevGDFBfQGw) They use techniques such as [CFOP](https://www.speedsolving.com/wiki/index.php/CFOP_method), [Roux](https://www.speedsolving.com/wiki/index.php/Roux_method), or [ZZ](https://www.speedsolving.com/wiki/index.php/ZZ_method), which work by memorizing many combinations of turns (known as algorithms) and when to use them.
 
 However, we're not here to memorize a bunch of algorithms - **we want a machine to learn how to solve it.** Can we harness the power of machine learning to solve a Rubik's Cube?
 
@@ -95,9 +97,34 @@ turns = ["D", "D'", "U", "U'", "F", "F'", "B", "B'", "L", "L'", "R", "R'"]
 
 One key concept used to generate a solution is to realize that a solution to a scrambled cube is to simply backtrack on the moves used scramble the cube. For instance:
 ```python
-scramble = ["D", "D", "R'", "F"] # A short example scramble
-solution = ["F'", "R", "D'", "D'"] # Its corresponding solution
+# A short example scramble
+scramble = ["D", "D", "R'", "F"]
+# Its corresponding solution
+getSolution(scramble) = ["F'", "R", "D'", "D'"]
 ```
+
+This means with every scramble we generate, we also have its corresponding solution!
 
 <!-- TRAINING MODEL -->
 ### Training Model
+
+With access to any scramble's respective solution, we can try training a model, where the stickers' location on a cube maps to the list of moves to solve it. But before we try this, we will encode the inputs and outputs as one-hot tensors.
+
+If you have any experience in deep learning, you might see that this problem is analogous to a [**seq2seq**](https://en.wikipedia.org/wiki/Seq2seq) problem - more specifically, [**machine translation**](https://en.wikipedia.org/wiki/Machine_translation). However, rather than mapping a sequence of words to another sequence of words in a different language, we are mapping a sequence of sticker colors to a sequence of cube rotations. 
+
+In this project, I use an LSTM encoder/decoder network generally used for machine translation. Additionally, I use the Adam optimizer for backpropagation and weight updating, along with categorical cross-entropy loss for the sparse one-hot features and labels.
+
+```python
+# LSTM encoder/decoder network 
+model = keras.Sequential([
+    keras.layers.LSTM(units=na),  # na = no. of units in LSTM encoder
+    keras.layers.RepeatVector(n=Ty),
+    keras.layers.LSTM(units=ns, return_sequences=True), # ns = no. of units in LSTM decoder
+    keras.layers.TimeDistributed(keras.layers.Dense(units=outputSize, activation="softmax"))
+])
+model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
+```
+
+## Results
+
+## Conclusion
