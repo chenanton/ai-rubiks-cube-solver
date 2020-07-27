@@ -1,5 +1,5 @@
 from scrambler import getRandomScrambles, getSolutions, maxScrambleLen, turns  # pylint: disable=import-error
-from cube import stickerColors # pylint: disable=import-error 
+from cube import stickerColors  # pylint: disable=import-error
 import numpy as np
 
 # Functions related to generating, formatting, and saving scrambles and corresponding solutions
@@ -7,8 +7,8 @@ import numpy as np
 turnLen = len(turns)
 stickerLen = len(stickerColors)
 
-inputFileBase = "data/features"
-outputFileBase = "data/labels"
+inputFileBase = "data/features/X"
+outputFileBase = "data/labels/Y"
 fileExt = ".npy"
 
 
@@ -17,8 +17,10 @@ def generateDataMulti(totalExamples, totalFiles=1):
     for i in range(totalFiles):
         generateData(int(totalExamples / totalFiles), i)
 
+
 # Generates specified amount of training examples and saves it to specified files
-def generateData(m, number=0):
+def generateData(m, numFiles=0):
+    print("Generating data to file no. " + str(numFiles))
     scrambles, stickers = getRandomScrambles(m)
     solutions = getSolutions(scrambles)
 
@@ -28,15 +30,16 @@ def generateData(m, number=0):
     solutionsOH = toSparse(solutionsPadded, turnLen)
     stickersOH = toSparse(stickersFlat, stickerLen)
 
-    np.save(inputFileBase  + str(number) + fileExt, stickersOH)
-    np.save(outputFileBase + str(number) + fileExt, solutionsOH)
+    np.save(inputFileBase + str(numFiles) + fileExt, stickersOH)
+    np.save(outputFileBase + str(numFiles) + fileExt, solutionsOH)
 
 
 # Pads each scramble in scrambles to maximum scramble length; returns np array
 # Output dimensions: (number of scrambles, maximum scramble length)
 def padScrambles(scrambles, maxScrambleLen=25):
     fillInt = -1   # empty character to be ignored once turned into sparse tensor
-    res = np.full((len(scrambles), maxScrambleLen), fill_value=fillInt, dtype="float32")
+    res = np.full((len(scrambles), maxScrambleLen),
+                  fill_value=fillInt, dtype="float32")
     for i in range(len(scrambles)):
         res[i, :len(scrambles[i])] = np.array(scrambles[i], dtype="float32")
     return res

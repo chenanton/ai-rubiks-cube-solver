@@ -2,16 +2,16 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from generateData import generateData
+from generateData import generateData, generateDataMulti, inputFileBase, outputFileBase, fileExt
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 # Loads data from specified input and output files, returns features and labels
-def loadData(inputFile="data/features.npy", outputFile="data/labels.npy"):
-    X = np.load(inputFile)
-    Y = np.load(outputFile)
+def loadData(numFiles=0):
+    X = np.load(inputFileBase + str(numFiles) + fileExt)
+    Y = np.load(outputFileBase + str(numFiles) + fileExt)
     return X, Y
 
 
@@ -38,11 +38,13 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 
 
 # Hyperparameters
-trainingSize = 50000
-maxLen = 54
-hiddenSize = 128
+trainingSize = 1000
 batchSize = 512
 epochs = 5
+numFiles = 10
+
+maxLen = 54
+hiddenSize = 128
 
 
 # Defines model layers, compiles model
@@ -59,20 +61,23 @@ def createModel(Tx, Ty, inputSize, outputSize, na=128, ns=128):
     return model
 
 
-if __name__ == "__main__":
-    generateData(trainingSize)
-
-    X, Y = loadData()
-
-    (XTrain, YTrain), (XDev, YDev), (XTest, YTest) = partitionData(X, Y, 98, 1, 1)
-
-    print(XTrain.shape)
-    print(XDev.shape)
-    print(XTest.shape)
+# Trains model
+def trainModel():
+    generateDataMulti(trainingSize, numFiles)
 
     model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
-    model.fit(XTrain, YTrain, epochs=epochs, batch_size=batchSize)
+
+    for i in range(numFiles):
+        Xi, Yi = loadData(i)
+        (XTrain, YTrain), (XDev, YDev), (XTest,
+                                         YTest) = partitionData(Xi, Yi, 98, 1, 1)
+        model.fit(XTrain, YTrain, epochs=epochs,
+                  batch_size=batchSize, validation_data=(XDev, YDev))
+        model.evaluate(XTest, YTest)
+
     model.summary()
     model.save(filepath="data/model.hdf5", save_format="h5")
 
 
+if __name__ == "__main__":
+    trainModel()
