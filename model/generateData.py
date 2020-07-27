@@ -7,11 +7,18 @@ import numpy as np
 turnLen = len(turns)
 stickerLen = len(stickerColors)
 
-inputFile = "data/features.npy"
-outputFile = "data/labels.npy"
+inputFileBase = "data/features"
+outputFileBase = "data/labels"
+fileExt = ".npy"
+
+
+# Generates specified amount of training examples across specified amount of files
+def generateDataMulti(totalExamples, totalFiles=1):
+    for i in range(totalFiles):
+        generateData(int(totalExamples / totalFiles), i)
 
 # Generates specified amount of training examples and saves it to specified files
-def generateData(m, inputFile="data/features.npy", outputFile="data/labels.npy"):
+def generateData(m, number=0):
     scrambles, stickers = getRandomScrambles(m)
     solutions = getSolutions(scrambles)
 
@@ -21,8 +28,8 @@ def generateData(m, inputFile="data/features.npy", outputFile="data/labels.npy")
     solutionsOH = toSparse(solutionsPadded, turnLen)
     stickersOH = toSparse(stickersFlat, stickerLen)
 
-    np.save(inputFile, stickersOH)
-    np.save(outputFile, solutionsOH)
+    np.save(inputFileBase  + str(number) + fileExt, stickersOH)
+    np.save(outputFileBase + str(number) + fileExt, solutionsOH)
 
 
 # Pads each scramble in scrambles to maximum scramble length; returns np array
@@ -51,13 +58,16 @@ def flattenStickers(stickers):
 
 
 if __name__ == "__main__":
-    generateData(1000)
+    # generateData(1000)
 
-    XTrain = np.load(inputFile)
-    YTrain = np.load(outputFile)
+    # XTrain = np.load(inputFile)
+    # YTrain = np.load(outputFile)
 
-    print("X shape: ")
-    print(XTrain.shape)
+    # print("X shape: ")
+    # print(XTrain.shape)
 
-    print("Y shape: ")
-    print(YTrain.shape)
+    # print("Y shape: ")
+    # print(YTrain.shape)
+
+    test = np.array([[0, 1, 2], [3, 4, 5], [-1, 0, 8]])
+    print(toSparse(test, numClasses=6))
