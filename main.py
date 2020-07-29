@@ -10,8 +10,25 @@
 
 import sys
 from model.cube import Cube
-print("working")
-print(sys.path)
+import json
+import matplotlib.pyplot as plt
 
-cube = Cube()
-cube.plotCube()
+historyLoad = json.load(open("data/histories/history0.json", 'r'))
+for i in range(1, 50):
+    history_i = json.load(open("data/histories/history" + str(i) + ".json", 'r'))
+    for key, val in history_i.items():
+        historyLoad[key] += val
+
+# print(historyLoad)
+
+# print(historyLoad["loss"])
+
+plt.plot(historyLoad["val_accuracy"])
+plt.plot(historyLoad["accuracy"])
+# plt.figaspect(3)
+
+plt.legend(["val_accuracy", "accuracy"])
+plt.title("Training and Validation Prediction Accuracy Over Time")
+plt.ylabel("Prediction Accuracy")
+plt.xlabel("Epochs (200k training examples per epoch)")
+plt.show()
