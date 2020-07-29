@@ -39,10 +39,10 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 
 
 # Hyperparameters
-trainingSize = 1000
+trainingSize = 10000000
 batchSize = 512
-epochs = 5
-numFiles = 10
+epochs = 10
+numFiles = 50
 
 maxLen = 54
 hiddenSize = 128
