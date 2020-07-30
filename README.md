@@ -133,9 +133,7 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accur
 Attempt 2: -->
 
 <p align="center">
-    <a href="https://github.com/azychen/rubiks-cube-solver">
-        <img src="assets/screenshots/modelArchitecture.PNG" alt="Model Architecture" width="360" >
-    </a>
+    <img src="assets/screenshots/modelArchitecture.PNG" alt="Model Architecture" width="360" >
 </p>
 
 
