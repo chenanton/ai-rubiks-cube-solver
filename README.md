@@ -1,15 +1,12 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-
     <a href="https://github.com/azychen/rubiks-cube-solver">
         <img src="assets/images/logo.png" alt="Logo" width="180" >
     </a>
-
 <h2 align="center" >Rubik's Cube Solver</h2>
 
   <p align="center">
-
     A program which generates machine-learned cube rotations, solving any scrambled Rubik's Cube.
     <br />
     <a href="https://github.com/azychen/rubiks-cube-solver">View Demo</a>
@@ -17,7 +14,6 @@
     <a href="https://github.com/azychen/rubiks-cube-solver/issues">Report Bug</a>
     ·
     <a href="https://github.com/azychen/rubiks-cube-solver/issues">Request Feature</a>
-
   </p>
 </p>
 
@@ -123,7 +119,7 @@ If you have any experience in deep learning, you might see that this problem is 
 
 In this project, I use an LSTM encoder/decoder network generally used for machine translation. Additionally, I use the Adam optimizer for backpropagation and weight updating, along with categorical cross-entropy loss for the sparse one-hot features and labels.
 
-``` python
+<!-- ``` python
 # LSTM encoder/decoder network 
 model = keras.Sequential([
     keras.layers.LSTM(units=na),  # na = no. of units in LSTM encoder
@@ -134,7 +130,7 @@ model = keras.Sequential([
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 ```
 
-Attempt 2:
+Attempt 2: -->
 
 ``` python
 # LSTM encoder/decoder network, using Keras with TensorFlow backend
