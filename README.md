@@ -4,7 +4,7 @@
     <a href="https://github.com/azychen/rubiks-cube-solver">
         <img src="assets/images/logo.png" alt="Logo" width="180" >
     </a>
-<h2 align="center" >Rubik's Cube Solver</h2>
+    <h2 align="center" >Rubik's Cube Solver</h2>
 
   <p align="center">
     A program which generates machine-learned cube rotations, solving any scrambled Rubik's Cube.
@@ -132,9 +132,12 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accur
 
 Attempt 2: -->
 
-<a href="https://github.com/azychen/rubiks-cube-solver">
-        <img src="assets/screenshots/modelArchitecture.png" alt="Model Architecture" width="360" >
-</a>
+<p align="center">
+    <a href="https://github.com/azychen/rubiks-cube-solver">
+        <img src="assets/screenshots/modelArchitecture.PNG" alt="Model Architecture" width="360" >
+    </a>
+</p>
+
 
 ``` python
 # LSTM encoder/decoder network, using Keras with TensorFlow backend
