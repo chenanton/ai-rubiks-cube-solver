@@ -12,10 +12,14 @@ import sys
 from model.cube import Cube
 import json
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
 
-historyLoad = json.load(open("data/histories/history0.json", 'r'))
+historyLoad = json.load(open("data/histories/attempt1/history0.json", 'r'))
 for i in range(1, 50):
-    history_i = json.load(open("data/histories/history" + str(i) + ".json", 'r'))
+    history_i = json.load(
+        open("data/histories/attempt1/history" + str(i) + ".json", 'r'))
     for key, val in history_i.items():
         historyLoad[key] += val
 
@@ -31,4 +35,17 @@ plt.legend(["val_accuracy", "accuracy"])
 plt.title("Training and Validation Prediction Accuracy Over Time")
 plt.ylabel("Prediction Accuracy")
 plt.xlabel("Epochs (200k training examples per epoch)")
-plt.show()
+# plt.show()
+
+model = keras.models.load_model(filepath="data/model.hdf5")
+
+X = np.load("data/features/X0.npy")
+Y = np.load("data/labels/Y0.npy")
+
+keras.utils.plot_model(model, to_file="assets/screenshots/attempt1architecture.png")
+
+# preds = model.predict(X[0:20])
+# for i in range(20):
+#     print("Prediction: " + str(preds[i]))
+#     print("Actual: " + str(Y[i]))
+

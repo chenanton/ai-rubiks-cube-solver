@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input
 
 from generateData import generateData, generateDataMulti, inputFileBase, outputFileBase, fileExt
 
@@ -50,14 +51,29 @@ hiddenSize = 128
 historyPath = "data/histories/history"
 
 # Defines model layers, compiles model
-def createModel(Tx, Ty, inputSize, outputSize, na=128, ns=128):
-    model = keras.Sequential([
-        keras.layers.LSTM(units=na),
-        keras.layers.RepeatVector(n=Ty),
-        keras.layers.LSTM(units=ns, return_sequences=True),
-        keras.layers.TimeDistributed(keras.layers.Dense(
-            units=outputSize, activation="softmax"))
-    ])
+def createModel(Tx, Ty, inputSize, outputSize, na=256, ns=2048):
+    # model = keras.Sequential([
+    #     keras.layers.Embedding(input_dim=Tx, output_dim=na),
+    #     keras.layers.Bidirectional(keras.layers.LSTM(units=na)),
+    #     keras.layers.Attention(),
+    #     keras.layers.RepeatVector(n=Ty),
+    #     keras.layers.LSTM(units=ns, return_sequences=True),
+    #     keras.layers.TimeDistributed(keras.layers.Dense(
+    #         units=outputSize, activation="hardmax"))
+    # ])
+
+    encInput = Input(shape=[Tx, inputSize])
+    encEmbedding = Embedding()
+    lstm1 = Bidirectional(LSTM(units=Tx))(encInput)
+    lstm2 = LSTM(units=Tx)(lstm1)
+    lstm3 = LSTM(units=Tx)(lstm2)
+    attention1 = Attention()(lstm3)
+
+    decInput = Input(shape=[Ty, outputSize])
+
+
+
+
     model.compile(loss="categorical_crossentropy",
                   optimizer="adam", metrics=["accuracy"])
     return model
@@ -65,7 +81,7 @@ def createModel(Tx, Ty, inputSize, outputSize, na=128, ns=128):
 
 # Trains model
 def trainModel():
-    generateDataMulti(trainingSize, numFiles)
+    # generateDataMulti(trainingSize, numFiles)
 
     # model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
     model = keras.models.load_model("data/model.hdf5")
@@ -86,4 +102,4 @@ def trainModel():
 
 
 if __name__ == "__main__":
-    trainModel()
+    # trainModel()
