@@ -3,11 +3,11 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-import numpy as np
 import tensorflow as tf
+import numpy as np
+
 from tensorflow import keras
 from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input, RepeatVector
-
 from generateData import generateData, toSparse, generateDataMulti, inputFileBase, outputFileBase, fileExt
 
 
@@ -15,8 +15,20 @@ from generateData import generateData, toSparse, generateDataMulti, inputFileBas
 
 # Loads data from specified input and output files, returns features and labels
 def loadData(numFiles=0):
-    X = np.load(inputFileBase + str(numFiles) + fileExt)
-    Y = np.load(outputFileBase + str(numFiles) + fileExt)
+    encInput = np.load(inputFileBase + str(numFiles) + fileExt)
+    decInput = np.load(outputFileBase + str(numFiles) + fileExt)
+
+    decOutput = toSparse(decInput, 13)
+
+    X = {
+        "encInput": encInput,
+        "decInput": decInput
+    }
+
+    Y = {
+        "time_distributed": decOutput
+    }
+
     return X, Y
 
 
@@ -46,7 +58,7 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 trainingSize = 10000000
 batchSize = 512
 epochs = 10
-numFiles = 1
+numFiles = 50
 
 maxLen = 54
 hiddenSize = 128
@@ -90,24 +102,14 @@ def trainModel():
     # model = keras.models.load_model("data/model.hdf5")
 
     for i in range(numFiles):
-        encInput, decInput = loadData(i)
-        decOutput = toSparse(decInput, 13)
-
-        X = {
-            "encInput": encInput,
-            "decInput": decInput
-        }
-
-        Y = {
-            "time_distributed": decOutput
-        }
+        X, Y = loadData(i)
 
         # (XTrain, YTrain), (XDev, YDev), (XTest,
-                                        #  YTest) = partitionData(Xi, Yi, 98, 1, 1)
+        #  YTest) = partitionData(Xi, Yi, 98, 1, 1)
 
         # , validation_data=(XDev, YDev)
         historyModel = model.fit(
-            x=X, y=Y, epochs=epochs, batch_size=batchSize)
+            x=X, y=Y, epochs=epochs, batch_size=batchSize, validation_split=0.02)
         # model.evaluate(XTest, YTest)
 
         historyDict = historyModel.history
@@ -118,5 +120,5 @@ def trainModel():
 
 
 if __name__ == "__main__":
-    generateDataMulti(1000)
+    # generateDataMulti(trainingSize, totalFiles=numFiles)
     trainModel()
