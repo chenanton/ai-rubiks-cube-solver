@@ -113,7 +113,7 @@ This means with every scramble we generate, we also have its corresponding solut
 
 ### Training Model
 
-With access to any scramble's respective solution, we can try training a model, where the stickers' location on a cube maps to the list of moves to solve it. But before we try this, we will encode the inputs and outputs as one-hot tensors.
+With access to any scramble's respective solution, we can try training a model, where the stickers' location on a cube maps to the list of moves to solve it. But before we try this, we will tokenize the encoder and decoder inputs, as well converting the decoder output to a one-hot representation. 
 
 If you have any experience in deep learning, you might see that this problem is analogous to a [**seq2seq**](https://en.wikipedia.org/wiki/Seq2seq) problem - more specifically, [**machine translation**](https://en.wikipedia.org/wiki/Machine_translation). However, rather than mapping a sequence of words to another sequence of words in a different language, we are mapping a sequence of sticker colors to a sequence of cube rotations. 
 
