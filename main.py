@@ -16,6 +16,8 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 
+from model.train import createModel, checkpointPath
+
 historyLoad = json.load(open("data/histories/attempt1/history0.json", 'r'))
 for i in range(1, 50):
     history_i = json.load(
@@ -37,15 +39,16 @@ plt.ylabel("Prediction Accuracy")
 plt.xlabel("Epochs (200k training examples per epoch)")
 # plt.show()
 
-model = keras.models.load_model(filepath="data/model.hdf5")
+model = createModel(54, 25, 6, 13)
+model.load_weights(checkpointPath)
 
 X = np.load("data/features/X0.npy")
 Y = np.load("data/labels/Y0.npy")
 
 keras.utils.plot_model(model, to_file="assets/screenshots/attempt1architecture.png")
 
-# preds = model.predict(X[0:20])
-# for i in range(20):
-#     print("Prediction: " + str(preds[i]))
-#     print("Actual: " + str(Y[i]))
+preds = model.predict(X[0:20])
+for i in range(20):
+    print("Prediction: " + str(preds[i]))
+    print("Actual: " + str(Y[i]))
 

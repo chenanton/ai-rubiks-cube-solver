@@ -5,6 +5,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
 import numpy as np
+import time
 
 from tensorflow import keras
 from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input, RepeatVector
@@ -60,6 +61,9 @@ batchSize = 512
 epochs = 10
 numFiles = 50
 
+modelName = "rubiks-cube-lstm-{}".format(int(time.time()))
+checkpointPath = "logs/checkpoints/checkpoint.keras"
+
 maxLen = 54
 hiddenSize = 128
 
@@ -99,17 +103,20 @@ def trainModel():
     # generateDataMulti(trainingSize, numFiles)
 
     model = createModel(Tx=54, Ty=25, inputVocabLen=6, outputVocabLen=12 + 1)
-    # model = keras.models.load_model("data/model.hdf5")
+    # model = keras.models.load_model(checkpointPath)
+    model.load_weights(checkpointPath)
 
     for i in range(numFiles):
         X, Y = loadData(i)
 
-        # (XTrain, YTrain), (XDev, YDev), (XTest,
-        #  YTest) = partitionData(Xi, Yi, 98, 1, 1)
+        checkpoint = keras.callbacks.ModelCheckpoint(filepath=checkpointPath, monitor="val_loss", verbose=1, save_weights_only=True, save_best_only=True)
 
-        # , validation_data=(XDev, YDev)
+        earlyStopping = keras.callbacks.EarlyStopping(monitor="val_loss", patience=3, verbose=1)
+
+        tensorboard = keras.callbacks.TensorBoard(log_dir="logs/{}".format(modelName))
+
         historyModel = model.fit(
-            x=X, y=Y, epochs=epochs, batch_size=batchSize, validation_split=0.02)
+            x=X, y=Y, epochs=epochs, batch_size=batchSize, validation_split=0.02, callbacks=[checkpoint, earlyStopping, tensorboard])
         # model.evaluate(XTest, YTest)
 
         historyDict = historyModel.history
@@ -121,4 +128,15 @@ def trainModel():
 
 if __name__ == "__main__":
     # generateDataMulti(trainingSize, totalFiles=numFiles)
-    trainModel()
+    # trainModel()
+
+    model = createModel(54, 25, 6, 13)
+    model.load_weights(checkpointPath)
+
+    X, Y = loadData()
+
+    preds = model.predict({k:X[k] for k in range(20)})
+    for i in range(20):
+        print("Prediction: " + str(preds[i]))
+        print("Actual: " + str(Y[i]))
+
