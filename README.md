@@ -117,7 +117,7 @@ With access to any scramble's respective solution, we can try training a model, 
 
 If you have any experience in deep learning, you might see that this problem is analogous to a [**seq2seq**](https://en.wikipedia.org/wiki/Seq2seq) problem - more specifically, [**machine translation**](https://en.wikipedia.org/wiki/Machine_translation). However, rather than mapping a sequence of words to another sequence of words in a different language, we are mapping a sequence of sticker colors to a sequence of cube rotations. 
 
-In this project, I use an LSTM encoder/decoder network generally used for machine translation. Additionally, I use the Adam optimizer for backpropagation and weight updating, along with categorical cross-entropy loss for the sparse one-hot features and labels.
+In this project, I use an LSTM encoder/decoder network generally used for machine translation. Additionally, I use the Adam optimizer for backpropagation and weight updating, along with categorical cross-entropy loss for the sparse one-hot features and labels. Here's a look at the structure:
 
 <!-- ``` python
 # LSTM encoder/decoder network 
@@ -131,6 +131,8 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accur
 ```
 
 Attempt 2: -->
+
+<img src="assets/screenshots/modelArchitecture.png" alt="Logo" width="360" >
 
 ``` python
 # LSTM encoder/decoder network, using Keras with TensorFlow backend
