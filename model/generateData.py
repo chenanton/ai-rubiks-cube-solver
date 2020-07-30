@@ -26,11 +26,11 @@ def generateData(m, numFiles=0):
     solutionsPadded = padScrambles(solutions)
     stickersFlat = flattenStickers(stickers)
 
-    solutionsOH = toSparse(solutionsPadded, turnLen)
-    stickersOH = toSparse(stickersFlat, stickerLen)
+    # solutionsOH = toSparse(solutionsPadded, turnLen)
+    # stickersOH = toSparse(stickersFlat, stickerLen)
 
-    np.save(inputFileBase + str(numFiles) + fileExt, stickersOH)
-    np.save(outputFileBase + str(numFiles) + fileExt, solutionsOH)
+    np.save(inputFileBase + str(numFiles) + fileExt, stickersFlat)
+    np.save(outputFileBase + str(numFiles) + fileExt, solutionsPadded)
 
     print("Saved data to files no. " + str(numFiles) + ".")
 
