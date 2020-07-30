@@ -1,13 +1,16 @@
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input
-
-from generateData import generateData, generateDataMulti, inputFileBase, outputFileBase, fileExt
-
 import json
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input, RepeatVector
+
+from generateData import generateData, toSparse, generateDataMulti, inputFileBase, outputFileBase, fileExt
+
+
 
 
 # Loads data from specified input and output files, returns features and labels
@@ -43,39 +46,39 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 trainingSize = 10000000
 batchSize = 512
 epochs = 10
-numFiles = 50
+numFiles = 1
 
 maxLen = 54
 hiddenSize = 128
 
 historyPath = "data/histories/history"
 
+
 # Defines model layers, compiles model
-def createModel(Tx, Ty, inputSize, outputSize, na=256, ns=2048):
-    # model = keras.Sequential([
-    #     keras.layers.Embedding(input_dim=Tx, output_dim=na),
-    #     keras.layers.Bidirectional(keras.layers.LSTM(units=na)),
-    #     keras.layers.Attention(),
-    #     keras.layers.RepeatVector(n=Ty),
-    #     keras.layers.LSTM(units=ns, return_sequences=True),
-    #     keras.layers.TimeDistributed(keras.layers.Dense(
-    #         units=outputSize, activation="hardmax"))
-    # ])
+def createModel(Tx, Ty, inputVocabLen, outputVocabLen, embedDim=128, hiddenDim=512):
 
-    encInput = Input(shape=[Tx, inputSize])
-    encEmbedding = Embedding()
-    lstm1 = Bidirectional(LSTM(units=Tx))(encInput)
-    lstm2 = LSTM(units=Tx)(lstm1)
-    lstm3 = LSTM(units=Tx)(lstm2)
-    attention1 = Attention()(lstm3)
+    # Encoder
+    encInput = Input(shape=(Tx, ), name="encInput")
+    encEmbedding = Embedding(input_dim=inputVocabLen,
+                             output_dim=embedDim, input_length=Tx)(encInput)
 
-    decInput = Input(shape=[Ty, outputSize])
+    _, h, c = LSTM(units=hiddenDim, return_state=True)(encEmbedding)
 
+    # Decoder
+    decInput = Input(shape=(Ty, ), name="decInput")
+    decEmbedding = Embedding(input_dim=outputVocabLen,
+                             output_dim=embedDim, input_length=Ty)(decInput)
 
+    decLSTM, _, _ = LSTM(units=hiddenDim, return_state=True, return_sequences=True)(
+        decEmbedding, initial_state=[h, c])
 
+    decOutput = TimeDistributed(
+        Dense(outputVocabLen, activation="softmax"))(decLSTM)
 
+    model = keras.Model(inputs=[encInput, decInput], outputs=[decOutput])
     model.compile(loss="categorical_crossentropy",
                   optimizer="adam", metrics=["accuracy"])
+
     return model
 
 
@@ -83,16 +86,29 @@ def createModel(Tx, Ty, inputSize, outputSize, na=256, ns=2048):
 def trainModel():
     # generateDataMulti(trainingSize, numFiles)
 
-    # model = createModel(Tx=54, Ty=25, inputSize=6, outputSize=12)
-    model = keras.models.load_model("data/model.hdf5")
+    model = createModel(Tx=54, Ty=25, inputVocabLen=6, outputVocabLen=12 + 1)
+    # model = keras.models.load_model("data/model.hdf5")
 
     for i in range(numFiles):
-        Xi, Yi = loadData(i)
-        (XTrain, YTrain), (XDev, YDev), (XTest,
-                                         YTest) = partitionData(Xi, Yi, 98, 1, 1)
-        historyModel = model.fit(XTrain, YTrain, epochs=epochs,
-                  batch_size=batchSize, validation_data=(XDev, YDev))
-        model.evaluate(XTest, YTest)
+        encInput, decInput = loadData(i)
+        decOutput = toSparse(decInput, 13)
+
+        X = {
+            "encInput": encInput,
+            "decInput": decInput
+        }
+
+        Y = {
+            "time_distributed": decOutput
+        }
+
+        # (XTrain, YTrain), (XDev, YDev), (XTest,
+                                        #  YTest) = partitionData(Xi, Yi, 98, 1, 1)
+
+        # , validation_data=(XDev, YDev)
+        historyModel = model.fit(
+            x=X, y=Y, epochs=epochs, batch_size=batchSize)
+        # model.evaluate(XTest, YTest)
 
         historyDict = historyModel.history
         json.dump(historyDict, open(historyPath + str(i) + ".json", 'w'))
@@ -102,4 +118,5 @@ def trainModel():
 
 
 if __name__ == "__main__":
-    # trainModel()
+    generateDataMulti(1000)
+    trainModel()
