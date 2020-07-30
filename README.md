@@ -132,9 +132,9 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accur
 
 Attempt 2: -->
 
-<p>
-    <img src="./assets/screenshots/modelArchitecture.png" alt="Model Architecture" width="360" >
-</p>
+<a href="https://github.com/azychen/rubiks-cube-solver">
+        <img src="assets/screenshots/modelArchitecture.png" alt="Model Architecture" width="360" >
+</a>
 
 ``` python
 # LSTM encoder/decoder network, using Keras with TensorFlow backend
