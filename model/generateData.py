@@ -23,11 +23,11 @@ def generateData(m, numFiles=0):
     scrambles, stickers = getRandomScrambles(m)
     solutions = getSolutions(scrambles)
 
-    solutionsPadded = padScrambles(solutions)
     stickersFlat = flattenStickers(stickers)
+    solutionsPadded = padScrambles(solutions)
 
-    # solutionsOH = toSparse(solutionsPadded, turnLen)
     # stickersOH = toSparse(stickersFlat, stickerLen)
+    # solutionsOH = toSparse(solutionsPadded, turnLen)
 
     np.save(inputFileBase + str(numFiles) + fileExt, stickersFlat)
     np.save(outputFileBase + str(numFiles) + fileExt, solutionsPadded)
@@ -39,7 +39,7 @@ def generateData(m, numFiles=0):
 # Pads each scramble in scrambles to maximum scramble length; returns np array
 # Output dimensions: (number of scrambles, maximum scramble length)
 def padScrambles(scrambles, maxScrambleLen=25):
-    fillInt = -1   # empty character to be ignored once turned into sparse tensor
+    fillInt = 12   # empty character to be ignored once turned into sparse tensor
     res = np.full((len(scrambles), maxScrambleLen),
                   fill_value=fillInt, dtype="float32")
     for i in range(len(scrambles)):
