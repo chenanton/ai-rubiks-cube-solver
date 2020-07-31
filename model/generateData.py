@@ -7,6 +7,8 @@ import numpy as np
 turnLen = len(turns)
 stickerLen = len(stickerColors)
 
+fillInt = 12   # empty character to be ignored once turned into sparse tensor
+
 inputFileBase = "data/features/X"
 outputFileBase = "data/labels/Y"
 fileExt = ".npy"
@@ -39,7 +41,6 @@ def generateData(m, numFiles=0):
 # Pads each scramble in scrambles to maximum scramble length; returns np array
 # Output dimensions: (number of scrambles, maximum scramble length)
 def padScrambles(scrambles, maxScrambleLen=25):
-    fillInt = 12   # empty character to be ignored once turned into sparse tensor
     res = np.full((len(scrambles), maxScrambleLen),
                   fill_value=fillInt, dtype="float32")
     for i in range(len(scrambles)):
