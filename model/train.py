@@ -9,9 +9,9 @@ import time
 
 from tensorflow import keras
 from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input, RepeatVector
-from generateData import generateData, toSparse, generateDataMulti, inputFileBase, outputFileBase, fileExt
 
-
+from generateData import generateData, toSparse, generateDataMulti, inputFileBase, outputFileBase, fileExt, fillInt
+from scrambler import maxScrambleLen
 
 
 # Loads data from specified input and output files, returns features and labels
@@ -58,13 +58,13 @@ def partitionData(X, Y, trainWeight=3, devWeight=1, testWeight=1):
 # Hyperparameters
 trainingSize = 10000000
 batchSize = 512
-epochs = 10
+epochs = 3
 numFiles = 50
 
 modelName = "rubiks-cube-lstm-{}".format(int(time.time()))
 checkpointPath = "logs/checkpoints/checkpoint.keras"
 
-maxLen = 54
+maxInputLen = 54
 hiddenSize = 128
 
 historyPath = "data/histories/history"
@@ -72,71 +72,102 @@ historyPath = "data/histories/history"
 
 # Defines model layers, compiles model
 def createModel(Tx, Ty, inputVocabLen, outputVocabLen, embedDim=128, hiddenDim=512):
-
+    # Training Model
     # Encoder
     encInput = Input(shape=(Tx, ), name="encInput")
     encEmbedding = Embedding(input_dim=inputVocabLen,
                              output_dim=embedDim, input_length=Tx)(encInput)
 
-    _, h, c = LSTM(units=hiddenDim, return_state=True)(encEmbedding)
+    encLSTM = LSTM(units=hiddenDim, return_state=True)
+    _, h, c = encLSTM(encEmbedding)
 
     # Decoder
     decInput = Input(shape=(Ty, ), name="decInput")
     decEmbedding = Embedding(input_dim=outputVocabLen,
                              output_dim=embedDim, input_length=Ty)(decInput)
 
-    decLSTM, _, _ = LSTM(units=hiddenDim, return_state=True, return_sequences=True)(
-        decEmbedding, initial_state=[h, c])
+    decLSTM = LSTM(units=hiddenDim, return_state=True, return_sequences=True)
+    decLSTMOutput, _, _ = decLSTM(decEmbedding, initial_state=[h, c])
 
-    decOutput = TimeDistributed(
-        Dense(outputVocabLen, activation="softmax"))(decLSTM)
+    decDense = TimeDistributed(Dense(outputVocabLen, activation="softmax"))
+    decOutput = decDense(decLSTMOutput)
 
     model = keras.Model(inputs=[encInput, decInput], outputs=[decOutput])
     model.compile(loss="categorical_crossentropy",
                   optimizer="adam", metrics=["accuracy"])
 
-    return model
+
+    # Encoder model
+    encoderModel = keras.Model(inputs=encInput, outputs=[h, c])
+
+    # Decoder model
+    decModelStateH = Input(shape=(hiddenDim, ), name="decInitialStateH")
+    decModelStateC = Input(shape=(hiddenDim, ), name="decInitialStateC")
+    decModelOutputs, decModelH, decModelC = decLSTM(decEmbedding, initial_state=[decModelStateH, decModelStateC])
+    decModelOutputs = decDense(decModelOutputs)
+
+    decoderModel = keras.Model(inputs=[decInput, decModelStateH ,decModelStateC], outputs=[decModelOutputs, decModelH, decModelC])
+
+    return model, encoderModel, decoderModel
 
 
 # Trains model
 def trainModel():
-    # generateDataMulti(trainingSize, numFiles)
-
-    model = createModel(Tx=54, Ty=25, inputVocabLen=6, outputVocabLen=12 + 1)
-    # model = keras.models.load_model(checkpointPath)
+    model, _, _ = createModel(Tx=maxInputLen, Ty=maxScrambleLen, inputVocabLen=6, outputVocabLen=12 + 1)
     model.load_weights(checkpointPath)
 
     for i in range(numFiles):
         X, Y = loadData(i)
 
         checkpoint = keras.callbacks.ModelCheckpoint(filepath=checkpointPath, monitor="val_loss", verbose=1, save_weights_only=True, save_best_only=True)
-
         earlyStopping = keras.callbacks.EarlyStopping(monitor="val_loss", patience=3, verbose=1)
-
         tensorboard = keras.callbacks.TensorBoard(log_dir="logs/{}".format(modelName))
 
-        historyModel = model.fit(
-            x=X, y=Y, epochs=epochs, batch_size=batchSize, validation_split=0.02, callbacks=[checkpoint, earlyStopping, tensorboard])
-        # model.evaluate(XTest, YTest)
+        callbacks=[checkpoint, earlyStopping, tensorboard]
 
-        historyDict = historyModel.history
-        json.dump(historyDict, open(historyPath + str(i) + ".json", 'w'))
+        model.fit(
+            x=X, y=Y, epochs=epochs, batch_size=batchSize, validation_split=0.02, callbacks=callbacks)
 
     model.summary()
     model.save(filepath="data/model.hdf5", save_format="h5")
+
+
+# Predicts solution from single sticker mapping
+def predict(stickers, encoderModel, decoderModel):
+    h, c = encoderModel.predict(stickers)
+
+    targetSeq = np.zeros((stickers.shape[0], maxScrambleLen))
+    
+    prevMoves = np.zeros((fillInt + 1, ))
+    for i in range(maxScrambleLen):
+
+        X = {
+            "decInput": targetSeq,
+            "decInitialStateH": h,
+            "decInitialStateC": c
+        }
+
+        outputs, _, _ = decoderModel.predict(X)
+        prevMoves = outputs[:, i, :]
+        targetSeq[:, i] = np.argmax(prevMoves, axis=-1)
+
+    return targetSeq
 
 
 if __name__ == "__main__":
     # generateDataMulti(trainingSize, totalFiles=numFiles)
     # trainModel()
 
-    model = createModel(54, 25, 6, 13)
+    model, encoderModel, decoderModel = createModel(54, 25, 6, 13)
     model.load_weights(checkpointPath)
+    encoderModel.load_weights(checkpointPath)
+    decoderModel.load_weights(checkpointPath)
 
-    X, Y = loadData()
+    X = np.load("data/features/X0.npy")[:20]
+    Y = np.load("data/labels/Y0.npy")[:20]
 
-    preds = model.predict({k:X[k] for k in range(20)})
-    for i in range(20):
-        print("Prediction: " + str(preds[i]))
-        print("Actual: " + str(Y[i]))
+    print("Prediction: ")
+    print(predict(X, encoderModel, decoderModel))
+    print("Actual: ")
+    print(Y)
 
