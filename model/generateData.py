@@ -37,7 +37,6 @@ def generateData(m, numFiles=0):
     print("Saved data to files no. " + str(numFiles) + ".")
 
 
-
 # Pads each scramble in scrambles to maximum scramble length; returns np array
 # Output dimensions: (number of scrambles, maximum scramble length)
 def padScrambles(scrambles, maxScrambleLen=25):
@@ -64,16 +63,5 @@ def flattenStickers(stickers):
 
 
 if __name__ == "__main__":
-    # generateData(1000)
-
-    # XTrain = np.load(inputFile)
-    # YTrain = np.load(outputFile)
-
-    # print("X shape: ")
-    # print(XTrain.shape)
-
-    # print("Y shape: ")
-    # print(YTrain.shape)
-
     test = np.array([[0, 1, 2], [3, 4, 5], [-1, 0, 8]])
     print(toSparse(test, numClasses=6))
