@@ -19,8 +19,13 @@ from scrambler import maxScrambleLen
 # Hyperparameters
 trainingSize = 10000000
 batchSize = 512
-epochs = 10
+epochs = 1
 numFiles = 5
+
+XBOS = 7
+XEOS = 6
+YBOS = 13
+YEOS = 12
 
 modelName = "rubiks-cube-lstm-{}".format(int(time.time()))
 checkpointPath = "logs/checkpoints/checkpoint.keras"
@@ -31,21 +36,39 @@ hiddenSize = 128
 
 # Loads data from specified input and output files, returns features and labels
 def loadData(numFiles=0):
-    encInput = np.load(inputFileBase + str(numFiles) + fileExt)
-    decInput = np.load(outputFileBase + str(numFiles) + fileExt)
+    encInput = np.load(inputFileBase + str(numFiles) + fileExt)[:10000]
+    decInput = np.load(outputFileBase + str(numFiles) + fileExt)[:10000]
 
-    # decOutput = toSparse(decInput, 13)
-
+    encInput, decInput = addStartEnd(encInput, decInput)
+    truncateInputPadding = np.full((decInput.shape[0], 1), fill_value=YEOS)
+    decTruncatedInput = np.concatenate((decInput[:, 1:], truncateInputPadding), axis=1) 
     X = {
         "encInput": encInput,
         "decInput": decInput
     }
 
     Y = {
-        "decDense": decInput
+        "decDense": decTruncatedInput
     }
 
     return X, Y
+
+
+# Adds start and end characters to data:
+#   Features start: 7
+#   Features end: 6
+#   Labels start: 13
+#   Labels end: 12
+def addStartEnd(features, labels):
+    featuresStart = np.full((features.shape[0], 1), fill_value=XBOS)
+    featuresEnd = np.full((features.shape[0], 1), fill_value=XEOS)
+    features = np.concatenate((featuresStart, features, featuresEnd), axis=1)
+
+    labelsStart = np.full((labels.shape[0], 1), fill_value=YBOS)
+    labelsEnd = np.full((labels.shape[0], 1), fill_value=YEOS)
+    labels = np.concatenate((labelsStart, labels, labelsEnd), axis=1)
+
+    return features, labels
 
 
 # Partitions data into train/dev/test sets
@@ -132,15 +155,15 @@ def connectDecoder(layers, initialState):
 
 # Defines model layers, compiles model
 def createModel(Tx, Ty, inputVocabLen, outputVocabLen, embedDim=128, hiddenDim=512):
-    # Create and connect encoder layers
+    # Create  layers
     encLayers = createEncoderLayers(Tx, inputVocabLen)
-    encOutput = connectEncoder(encLayers)
-
-    # Create and connect decoder layers
     decLayers = createDecoderLayers(Ty, outputVocabLen)
+
+    # Connect layers for training model
+    encOutput = connectEncoder(encLayers)
     decOutput = connectDecoder(decLayers, initialState=encOutput)
 
-    # Training model
+    # Create training model
     encInput = encLayers["encInput"]
     decInput = decLayers["decInput"]
     model = keras.Model(inputs=[encInput, decInput], outputs=[decOutput], name="trainingModel")
@@ -160,24 +183,26 @@ def createModel(Tx, Ty, inputVocabLen, outputVocabLen, embedDim=128, hiddenDim=5
 
 # Trains model
 def trainModel(loadPrev=True):
-    model, encoderModel, decoderModel = createModel(Tx=maxInputLen, Ty=maxScrambleLen, inputVocabLen=stickerLen, outputVocabLen=turnLen + 1)
+    model, encoderModel, decoderModel = createModel(Tx=maxInputLen + 2, Ty=maxScrambleLen + 2, inputVocabLen=stickerLen + 2, outputVocabLen=turnLen + 2)
 
     if loadPrev:
         model.load_weights(checkpointPath)
-        encoderModel.load_weights(checkpointPath, by_name=True)
-        decoderModel.load_weights(checkpointPath, by_name=True)
+        # encoderModel.load_weights(checkpointPath, by_name=True)
+        # decoderModel.load_weights(checkpointPath, by_name=True)
 
     for i in range(numFiles):
         X, Y = loadData(i)
 
         callbacks = getCallbacks()
 
+        print(X["encInput"].shape)
+        print(X["decInput"].shape)
         model.fit(
             x=X, y=Y, epochs=epochs, batch_size=batchSize, validation_split=0.02, callbacks=callbacks)
 
         encoderModel.save_weights(filepath="data/models/encoderModel.hdf5", save_format="h5")
         decoderModel.save_weights(filepath="data/models/decoderModel.hdf5", save_format="h5")
-        model.save(filepath="data/model.hdf5", save_format="h5")
+        model.save(filepath="data/models/model.hdf5", save_format="h5")
 
     model.summary()
     
@@ -193,11 +218,16 @@ def getCallbacks():
 
 # Predicts solution from single sticker mapping
 def predict(stickers, encoderModel, decoderModel):
-    h, c = encoderModel.predict(stickers)
+    stickersPadded, _ = addStartEnd(stickers, np.zeros((3, 3)))
+    h, c = encoderModel.predict(stickersPadded)
+    print("States")
+    print(h)
+    print(c)
 
-    targetSeq = np.zeros((stickers.shape[0], maxScrambleLen))
+    targetSeq = np.zeros((stickers.shape[0], maxScrambleLen + 2))
+    targetSeq[:, 0] = np.full((stickers.shape[0], ), fill_value=YBOS)
     
-    prevMoves = np.zeros((fillInt + 1, ))
+    prevMoves = np.zeros((stickers.shape[0], YBOS + 1))
     for i in range(maxScrambleLen):
 
         X = {
@@ -207,9 +237,13 @@ def predict(stickers, encoderModel, decoderModel):
         }
 
         outputs = decoderModel.predict(X)
-        print(outputs)
         prevMoves = outputs[:, i, :]
-        targetSeq[:, i] = np.argmax(prevMoves, axis=-1)
+        if i == 20:
+            print("Outputs: ")
+            print(outputs.shape)
+            print(outputs)
+            print(np.argmax(prevMoves, axis=1))
+        targetSeq[:, i] = np.argmax(prevMoves, axis=1)
 
     return targetSeq
 
@@ -218,16 +252,25 @@ if __name__ == "__main__":
     # generateDataMulti(trainingSize, totalFiles=numFiles)
     trainModel(loadPrev=False)
 
-    model, encoderModel, decoderModel = createModel(54, 25, 6, 13)
+    model, encoderModel, decoderModel = createModel(56, 27, 8, 14)
     model.load_weights(checkpointPath)
-    encoderModel.load_weights(checkpointPath, by_name=True)
-    decoderModel.load_weights(checkpointPath, by_name=True)
+    # encoderModel.load_weights(checkpointPath, by_name=True)
+    # decoderModel.load_weights(checkpointPath, by_name=True)
 
-    X = np.load("data/features/X0.npy")[:20]
-    Y = np.load("data/labels/Y0.npy")[:20]
+    # X = np.load("data/features/X0.npy")[:20]
+    # Y = np.load("data/labels/Y0.npy")[:20]
 
-    print("Prediction: ")
-    print(predict(X, encoderModel, decoderModel))
+    # # print("Input: ")
+    # # print(X)
+    # print("Prediction: ")
+    # print(predict(X, encoderModel, decoderModel))
+    # print("Actual: ")
+    # _, yPad = addStartEnd(np.zeros((2, 2)), Y)
+    # print(yPad)
+
+    X, Y = loadData()
+    preds = np.argmax(model.predict(X), axis=-1)
+    print("Predictions: ")
+    print(preds)
     print("Actual: ")
-    print(Y)
-
+    print(Y["decDense"].astype(int))
