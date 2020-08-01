@@ -36,8 +36,8 @@ hiddenSize = 128
 
 # Loads data from specified input and output files, returns features and labels
 def loadData(numFiles=0):
-    encInput = np.load(inputFileBase + str(numFiles) + fileExt)[:10000]
-    decInput = np.load(outputFileBase + str(numFiles) + fileExt)[:10000]
+    encInput = np.load(inputFileBase + str(numFiles) + fileExt)
+    decInput = np.load(outputFileBase + str(numFiles) + fileExt)
 
     encInput, decInput = addStartEnd(encInput, decInput)
     truncateInputPadding = np.full((decInput.shape[0], 1), fill_value=YEOS)
@@ -100,11 +100,15 @@ def createEncoderLayers(Tx, inputVocabLen, embedDim=128, hiddenDim=512):
     encInput = Input(shape=(Tx, ), name="encInput")
     encEmbedding = Embedding(input_dim=inputVocabLen,
                              output_dim=embedDim, input_length=Tx, name="encEmbedding")
-    encLSTM = LSTM(units=hiddenDim, return_state=True, name="encLSTM")
+    encLSTM0 = LSTM(units=hiddenDim, return_sequences=True, name="encLSTM0")
+    encLSTM1 = LSTM(units=hiddenDim, return_sequences=True, name="encLSTM1")
+    encLSTM2 = LSTM(units=hiddenDim, return_state=True, name="encLSTM2")
 
     layers["encInput"] = encInput
     layers["encEmbedding"] = encEmbedding
-    layers["encLSTM"] = encLSTM
+    layers["encLSTM0"] = encLSTM0
+    layers["encLSTM1"] = encLSTM1
+    layers["encLSTM2"] = encLSTM2
 
     return layers
 
@@ -113,7 +117,9 @@ def createEncoderLayers(Tx, inputVocabLen, embedDim=128, hiddenDim=512):
 def connectEncoder(layers):
     net = layers["encInput"]
     net = layers["encEmbedding"](net)
-    _, h, c = layers["encLSTM"](net)
+    net = layers["encLSTM0"](net)
+    net = layers["encLSTM1"](net)
+    _, h, c = layers["encLSTM2"](net)
 
     encOutput = [h, c]
     return encOutput
@@ -129,14 +135,18 @@ def createDecoderLayers(Ty, outputVocabLen, embedDim=128, hiddenDim=512):
 
     decEmbedding = Embedding(input_dim=outputVocabLen,
                              output_dim=embedDim, input_length=Ty, name="decEmbedding")
-    decLSTM = LSTM(units=hiddenDim, return_state=True, return_sequences=True, name="decLSTM")
+    decLSTM0 = LSTM(units=hiddenDim, return_sequences=True, name="decLSTM0")
+    decLSTM1 = LSTM(units=hiddenDim, return_sequences=True, name="decLSTM1")
+    decLSTM2 = LSTM(units=hiddenDim, return_sequences=True, name="decLSTM2")
     decDense = TimeDistributed(Dense(outputVocabLen, activation="softmax"), name="decDense")
 
     layers["decInput"] = decInput
     layers["decInitialStateH"] = decInitialStateH
     layers["decInitialStateC"] = decInitialStateC
     layers["decEmbedding"] = decEmbedding
-    layers["decLSTM"] = decLSTM
+    layers["decLSTM0"] = decLSTM0
+    layers["decLSTM1"] = decLSTM1
+    layers["decLSTM2"] = decLSTM2
     layers["decDense"] = decDense
 
     return layers
@@ -146,7 +156,9 @@ def createDecoderLayers(Ty, outputVocabLen, embedDim=128, hiddenDim=512):
 def connectDecoder(layers, initialState):
     net = layers["decInput"]
     net = layers["decEmbedding"](net)
-    net, _, _ = layers["decLSTM"](net, initial_state=initialState)
+    net = layers["decLSTM0"](net, initial_state=initialState)
+    net = layers["decLSTM1"](net, initial_state=initialState)
+    net = layers["decLSTM2"](net, initial_state=initialState)
     net = layers["decDense"](net)
 
     decOutput = net
@@ -187,8 +199,6 @@ def trainModel(loadPrev=True):
 
     if loadPrev:
         model.load_weights(checkpointPath)
-        # encoderModel.load_weights(checkpointPath, by_name=True)
-        # decoderModel.load_weights(checkpointPath, by_name=True)
 
     for i in range(numFiles):
         X, Y = loadData(i)
@@ -220,9 +230,6 @@ def getCallbacks():
 def predict(stickers, encoderModel, decoderModel):
     stickersPadded, _ = addStartEnd(stickers, np.zeros((3, 3)))
     h, c = encoderModel.predict(stickersPadded)
-    print("States")
-    print(h)
-    print(c)
 
     targetSeq = np.zeros((stickers.shape[0], maxScrambleLen + 2))
     targetSeq[:, 0] = np.full((stickers.shape[0], ), fill_value=YBOS)
@@ -238,11 +245,6 @@ def predict(stickers, encoderModel, decoderModel):
 
         outputs = decoderModel.predict(X)
         prevMoves = outputs[:, i, :]
-        if i == 20:
-            print("Outputs: ")
-            print(outputs.shape)
-            print(outputs)
-            print(np.argmax(prevMoves, axis=1))
         targetSeq[:, i] = np.argmax(prevMoves, axis=1)
 
     return targetSeq
@@ -250,27 +252,27 @@ def predict(stickers, encoderModel, decoderModel):
 
 if __name__ == "__main__":
     # generateDataMulti(trainingSize, totalFiles=numFiles)
-    trainModel(loadPrev=False)
+    # trainModel(loadPrev=False)
 
     model, encoderModel, decoderModel = createModel(56, 27, 8, 14)
     model.load_weights(checkpointPath)
     # encoderModel.load_weights(checkpointPath, by_name=True)
     # decoderModel.load_weights(checkpointPath, by_name=True)
 
-    # X = np.load("data/features/X0.npy")[:20]
-    # Y = np.load("data/labels/Y0.npy")[:20]
+    X = np.load("data/features/X0.npy")[:20]
+    Y = np.load("data/labels/Y0.npy")[:20]
 
-    # # print("Input: ")
-    # # print(X)
-    # print("Prediction: ")
-    # print(predict(X, encoderModel, decoderModel))
-    # print("Actual: ")
-    # _, yPad = addStartEnd(np.zeros((2, 2)), Y)
-    # print(yPad)
-
-    X, Y = loadData()
-    preds = np.argmax(model.predict(X), axis=-1)
-    print("Predictions: ")
-    print(preds)
+    print("Input: ")
+    print(X)
+    print("Prediction: ")
+    print(predict(X, encoderModel, decoderModel))
     print("Actual: ")
-    print(Y["decDense"].astype(int))
+    _, yPad = addStartEnd(np.zeros((2, 2)), Y)
+    print(yPad)
+
+    # X, Y = loadData()
+    # preds = np.argmax(model.predict(X), axis=-1)
+    # print("Predictions: ")
+    # print(preds)
+    # print("Actual: ")
+    # print(Y["decDense"].astype(int))
