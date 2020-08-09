@@ -39,13 +39,11 @@ plt.ylabel("Prediction Accuracy")
 plt.xlabel("Epochs (200k training examples per epoch)")
 # plt.show()
 
-model = createModel(54, 25, 6, 13)
+# model = createModel(54, 25, 6, 13)
 model.load_weights(checkpointPath)
 
 X = np.load("data/features/X0.npy")
 Y = np.load("data/labels/Y0.npy")
-
-keras.utils.plot_model(model, to_file="assets/screenshots/attempt1architecture.png")
 
 preds = model.predict(X[0:20])
 for i in range(20):
