@@ -39,7 +39,7 @@ plt.ylabel("Prediction Accuracy")
 plt.xlabel("Epochs (200k training examples per epoch)")
 # plt.show()
 
-# model = createModel(54, 25, 6, 13)
+model = createModel(54, 25, 6, 13)
 model.load_weights(checkpointPath)
 
 X = np.load("data/features/X0.npy")
