@@ -12,26 +12,19 @@ maxScrambleLen = 25
 
 fileExt = ".npy"
 
-turns = ["D", "D'", "U", "U'", "F", "F'", "B", "B'", "L", "L'", "R", "R'"]
-# turnsToIndex = dict(zip(turns, list(range(len(turns)))))
+turns = ["D", "D2", "D'", "U", "U2", "U'", "F", "F2", "F'",
+         "B", "B2", "B'", "L", "L2", "L'", "R", "R2", "R'"]
+
 
 stickerToFace = {
     0: "D",
     1: "U",
-    2: "F", 
+    2: "F",
     3: "B",
     4: "L",
     5: "R"
 }
 
-doubleTurns = {
-    "U2": ["U", "U"],
-    "D2": ["D", "D"],
-    "F2": ["F", "F"],
-    "B2": ["B", "B"],
-    "L2": ["L", "L"],
-    "R2": ["R", "R"]
-}
 
 def generateData(m, numFiles=1, filePathBase="data/trainingSets/"):
     for i in range(numFiles):
@@ -43,7 +36,7 @@ def generateData(m, numFiles=1, filePathBase="data/trainingSets/"):
 
 # Returns a list of random sticker and solution pairs
 def getRandomScrambles(iterations):
-    res = np.zeros((iterations, 55)) # 54 stickers + 1 solution move
+    res = np.zeros((iterations, 55))  # 54 stickers + 1 solution move
     for i in range(iterations):
         lastTurn, stickers = randomScramble()
         res[i, :54] = stickers.flatten()
@@ -62,7 +55,7 @@ def randomScramble():
 
     # Get solution
     solution = solve(toStickerString(cube.stickers))
-    lastMove = tokenizeSolution(solution) 
+    lastMove = tokenizeSolution(solution)
 
     return lastMove, cube.stickers
 
@@ -90,18 +83,12 @@ def indexToFace(index):
 
 # Tokenizes solution obtained from solve() in twophase, returns first move only
 def tokenizeSolution(solution):
-    tokens = solution.split()[:1]   # get only first move
-
-    res = []
-    for i in range(len(tokens)):
-        res += doubleTurns.get(tokens[i], tokens[i:i+1])
-
-    res = [turns.index(x) for x in res]
-    return res[0]
+    token = solution.split()[0]   # get only first move
+    res = turns.index(token)
+    return res
 
 
 if __name__ == "__main__":
     solution, stickers = randomScramble()
     print(stickers)
     print(solution)
-    print(tokenizeSolution(solution))

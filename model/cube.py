@@ -15,6 +15,7 @@ class Cube:
     stickers = None
     turnMap = {}
 
+
     # constructor
     def __init__(self):
         self.stickers = np.empty([6, self.sideLen, self.sideLen])
@@ -22,18 +23,25 @@ class Cube:
             self.stickers[i, :, :] = np.full([self.sideLen, self.sideLen], i)
         self.turnMap = {
             "D": self.rotateD,
+            "D2": self.rotateD2,
             "D'": self.rotateDprime,
             "U": self.rotateU,
+            "U2": self.rotateU2,
             "U'": self.rotateUprime,
             "F": self.rotateF,
+            "F2": self.rotateF2,
             "F'": self.rotateFprime,
             "B": self.rotateB,
+            "B2": self.rotateB2,
             "B'": self.rotateBprime,
             "L": self.rotateL,
+            "L2": self.rotateL2,
             "L'": self.rotateLprime,
             "R": self.rotateR,
+            "R2": self.rotateR2,
             "R'": self.rotateRprime,
         }
+
 
     # __call__ used for rotations
     def __call__(self, rotation):
@@ -41,6 +49,16 @@ class Cube:
             self.turnMap[rotation]()
         except KeyError:
             print("That turn doesn't exist!")
+
+
+    # Returns whether cube is solved (bool)
+    def isSolved(self):
+        for i, _ in enumerate(stickerColors):
+            comparison = self.stickers[i, :, :] == np.full([self.sideLen, self.sideLen], i)
+            if not comparison.all():
+                return False
+        return True
+
 
     # print cube
     def plotCube(self, title="Sticker Mapping"):
@@ -65,6 +83,7 @@ class Cube:
                  linestyle='-', linewidth=4)
         plt.show()
 
+
     # ROTATIONS
 
     # rotate bottom face clockwise
@@ -77,10 +96,18 @@ class Cube:
         self.stickers[5, 2, :] = copy.copy(self.stickers[2, 2, :])
         self.stickers[2, 2, :] = tmp
 
+
+    # rotate bottom face 180 degrees
+    def rotateD2(self):
+        for _ in range(2):
+            self.rotateD()
+
+
     # rotate bottom face counter-clockwise
     def rotateDprime(self):
         for _ in range(3):
             self.rotateD()
+
 
     # rotate top face clockwise
     def rotateU(self):
@@ -92,10 +119,18 @@ class Cube:
         self.stickers[5, 0, :] = copy.copy(self.stickers[3, 0, :])
         self.stickers[3, 0, :] = tmp
 
+
+    # rotate top face 180 degrees
+    def rotateU2(self):
+        for _ in range(2):
+            self.rotateU()
+
+
     # rotate top face counter-clockwise
     def rotateUprime(self):
         for _ in range(3):
             self.rotateU()
+
 
     # rotate front face clockwise
     def rotateF(self):
@@ -107,10 +142,18 @@ class Cube:
         self.stickers[5, :, 0] = copy.copy(self.stickers[1, 2, :])
         self.stickers[1, 2, :] = np.flip(tmp)
 
+
+    # rotate front face 180 degrees
+    def rotateF2(self):
+        for _ in range(2):
+            self.rotateF()
+
+
     # rotate front face counter-clockwise
     def rotateFprime(self):
         for _ in range(3):
             self.rotateF()
+
 
     # rotate back face clockwise
     def rotateB(self):
@@ -122,10 +165,18 @@ class Cube:
         self.stickers[4, :, 0] = copy.copy(np.flip(self.stickers[1, 0, :]))
         self.stickers[1, 0, :] = tmp
 
+
+    # rotate back face 180 degrees
+    def rotateB2(self):
+        for _ in range(2):
+            self.rotateB()
+
+
     # rotate back face counter-clockwise
     def rotateBprime(self):
         for _ in range(3):
             self.rotateB()
+
 
     # rotate left face clockwise
     def rotateL(self):
@@ -137,10 +188,18 @@ class Cube:
         self.stickers[2, :, 0] = copy.copy(self.stickers[1, :, 0])
         self.stickers[1, :, 0] = np.flip(tmp)
 
+
+    # rotate left face 180 degrees
+    def rotateL2(self):
+        for _ in range(2):
+            self.rotateL()
+
+
     # rotate left face counter-clockwise
     def rotateLprime(self):
         for _ in range(3):
             self.rotateL()
+
 
     # rotate right face clockwise
     def rotateR(self):
@@ -152,7 +211,21 @@ class Cube:
         self.stickers[3, :, 0] = copy.copy(np.flip(self.stickers[1, :, 2]))
         self.stickers[1, :, 2] = tmp
 
+
+    # rotate right face 180 degrees
+    def rotateR2(self):
+        for _ in range(2):
+            self.rotateR()
+
+
     # rotate right face counter-clockwise
     def rotateRprime(self):
         for _ in range(3):
             self.rotateR()
+
+
+if __name__ == "__main__":
+   cube = Cube()
+   print(cube.isSolved())
+   cube("R2")
+   print(cube.isSolved())

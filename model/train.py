@@ -47,7 +47,7 @@ def loadData(numFiles=0, filePathBase="data/trainingSets/"):
 def createModel():
     model = keras.Sequential([
         keras.layers.Input(shape=54),
-        keras.layers.Dense(units=1024, activation="relu", name="dense0"),
+        keras.layers.Dense(units=4096, activation="relu", name="dense0"),
         keras.layers.Dense(units=2048, activation="relu", name="dense1"),
         keras.layers.Dense(units=1024, activation="relu", name="dense2"),
         keras.layers.Dense(units=512, activation="relu", name="dense3"),
