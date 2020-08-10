@@ -15,6 +15,23 @@ fileExt = ".npy"
 turns = ["D", "D'", "U", "U'", "F", "F'", "B", "B'", "L", "L'", "R", "R'"]
 # turnsToIndex = dict(zip(turns, list(range(len(turns)))))
 
+stickerToFace = {
+    0: "D",
+    1: "U",
+    2: "F", 
+    3: "B",
+    4: "L",
+    5: "R"
+}
+
+doubleTurns = {
+    "U2": ["U", "U"],
+    "D2": ["D", "D"],
+    "F2": ["F", "F"],
+    "B2": ["B", "B"],
+    "L2": ["L", "L"],
+    "R2": ["R", "R"]
+}
 
 def generateData(m, numFiles=1, filePathBase="data/trainingSets/"):
     for i in range(numFiles):
@@ -37,59 +54,25 @@ def getRandomScrambles(iterations):
 # Generates a single random scramble and last move pair
 def randomScramble():
     cube = Cube()
-    prevMove, prevMoveCnt = -1, 0
 
     # Randomly scrmble cube in range [minScrambleLen, maxScrambleLen]
     for _ in range(random.randint(minScrambleLen, maxScrambleLen)):
         index = random.randint(0, len(turns) - 1)
-        while (index == prevMove + (1 if prevMove % 2 == 0 else -1)) or prevMoveCnt == 2:
-            index = random.randint(0, len(turns) - 1)
-            if index != prevMove:
-                prevMoveCnt = 1
-
         cube(turns[index])
-        prevMoveCnt = 1 if prevMove != index else prevMoveCnt + 1
-        prevMove = index
 
     # Get solution
     solution = solve(toStickerString(cube.stickers))
+    lastMove = tokenizeSolution(solution) 
 
-    return solution, cube.stickers
+    return lastMove, cube.stickers
 
 
 # Converts a 6x3x3 sticker tensor into a 54 character string to pass into twophase.solve()
 # Credit: tcbegley on GitHub: https://github.com/tcbegley/cube-solver
 def toStickerString(stickers):
-    print("BEFORE:")
-    print(stickers)
-    stickerList = toTwoPhase(stickers)
-    print("\nAFTER:")
-    print(stickerList)
-    print(flattenStickers(stickerList))
-    stickerList = map(indexToFace, flattenStickers(stickerList))
-    print("\nFINAL:")
-    print(flattenStickers(stickers))
+    stickerList = toTwoPhase(stickers).flatten()
+    stickerList = map(indexToFace, stickerList)
     return "".join(stickerList)
-
-
-# Converts index of sticker to face character
-def indexToFace(index):
-    stickerToFace = {
-        0: "D",
-        1: "U",
-        2: "F", 
-        3: "B",
-        4: "L",
-        5: "R"
-    }
-    return stickerToFace[index]
-
-
-# Flattens sticker patterns; changes stickers to np array
-# Output dimensions: (number of sticker layouts, 54)
-def flattenStickers(stickers):
-    stickers = stickers.flatten()
-    return stickers
 
 
 # Shifts 6x3x3 tensor from default representation to twophase representation
@@ -100,7 +83,25 @@ def toTwoPhase(stickers):
     return stickers[[1, 5, 2, 0, 4, 3], :, :]
 
 
+# Converts index of sticker to face character
+def indexToFace(index):
+    return stickerToFace[index]
+
+
+# Tokenizes solution obtained from solve() in twophase, returns first move only
+def tokenizeSolution(solution):
+    tokens = solution.split()[:1]   # get only first move
+
+    res = []
+    for i in range(len(tokens)):
+        res += doubleTurns.get(tokens[i], tokens[i:i+1])
+
+    res = [turns.index(x) for x in res]
+    return res[0]
+
+
 if __name__ == "__main__":
     solution, stickers = randomScramble()
     print(stickers)
     print(solution)
+    print(tokenizeSolution(solution))
