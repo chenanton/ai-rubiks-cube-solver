@@ -53,7 +53,7 @@ However, we're not here to memorize a bunch of algorithms - **we want a machine 
 * Weight learning is handled with [**TensorFlow**](https://www.tensorflow.org/).
 * Tensor operations are handled with [**NumPy**](https://numpy.org/).
 * Supplementary plotting is done with [**Matplotlib**](https://matplotlib.org/).
-* Unit testing is done with [**PyTest**](https://docs.pytest.org/en/latest/).
+* Unit testing is done with [**UnitTest**](https://docs.python.org/3/library/unittest.html).
 
 <!-- ROADMAP -->
 
