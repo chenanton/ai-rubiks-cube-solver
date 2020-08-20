@@ -4,9 +4,10 @@ import sys
 
 from model.cube import Cube
 
-# Scramble pattern for cube2 test case, 
+# Scramble pattern for cube2 test case,
 #   each piece's adjacent edges are different colour
 superflip = "U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2"
+
 
 class TestCube(unittest.TestCase):
 
@@ -20,6 +21,9 @@ class TestCube(unittest.TestCase):
         for i in range(6):
             self.assertTrue(np.array_equal(
                 self.cube1.stickers[i], np.full((3, 3), i)))
+
+    def testIsSolved(self):
+        self.assertTrue(self.cube1.isSolved())
 
     def testRotateDSolved(self):
         self.cube1.rotateD()
@@ -416,6 +420,242 @@ class TestCube(unittest.TestCase):
         ])
         self.assertEqual(pattern.tolist(), self.cube2.stickers.tolist())
 
+    def testIsSolvedNotSolved(self):
+        self.assertFalse(self.cube2.isSolved())
+
+    def testRotateDUnsolved(self):
+        self.cube2("D")
+        expected = np.array([
+            [[0, 4, 0], [3, 0, 2], [0, 5, 0]],
+            [[1, 3, 1], [4, 1, 5], [1, 2, 1]],
+            [[2, 1, 2], [4, 2, 5], [4, 0, 4]],
+            [[3, 1, 3], [5, 3, 4], [5, 0, 5]],
+            [[4, 1, 4], [3, 4, 2], [3, 0, 3]],
+            [[5, 1, 5], [2, 5, 3], [2, 0, 2]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateD2Unsolved(self):
+        self.cube2("D2")
+        expected = np.array([
+            [[0, 3, 0], [5, 0, 4], [0, 2, 0]],
+            [[1, 3, 1], [4, 1, 5], [1, 2, 1]],
+            [[2, 1, 2], [4, 2, 5], [3, 0, 3]],
+            [[3, 1, 3], [5, 3, 4], [2, 0, 2]],
+            [[4, 1, 4], [3, 4, 2], [5, 0, 5]],
+            [[5, 1, 5], [2, 5, 3], [4, 0, 4]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateDPrimeUnsolved(self):
+        self.cube2("D'")
+        expected = np.array([
+            [[0, 5, 0], [2, 0, 3], [0, 4, 0]],
+            [[1, 3, 1], [4, 1, 5], [1, 2, 1]],
+            [[2, 1, 2], [4, 2, 5], [5, 0, 5]],
+            [[3, 1, 3], [5, 3, 4], [4, 0, 4]],
+            [[4, 1, 4], [3, 4, 2], [2, 0, 2]],
+            [[5, 1, 5], [2, 5, 3], [3, 0, 3]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateUUnsolved(self):
+        self.cube2("U")
+        expected = np.array([
+            [[0, 2, 0], [4, 0, 5], [0, 3, 0]],
+            [[1, 4, 1], [2, 1, 3], [1, 5, 1]],
+            [[5, 1, 5], [4, 2, 5], [2, 0, 2]],
+            [[4, 1, 4], [5, 3, 4], [3, 0, 3]],
+            [[2, 1, 2], [3, 4, 2], [4, 0, 4]],
+            [[3, 1, 3], [2, 5, 3], [5, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateU2Unsolved(self):
+        self.cube2("U2")
+        expected = np.array([
+            [[0, 2, 0], [4, 0, 5], [0, 3, 0]],
+            [[1, 2, 1], [5, 1, 4], [1, 3, 1]],
+            [[3, 1, 3], [4, 2, 5], [2, 0, 2]],
+            [[2, 1, 2], [5, 3, 4], [3, 0, 3]],
+            [[5, 1, 5], [3, 4, 2], [4, 0, 4]],
+            [[4, 1, 4], [2, 5, 3], [5, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateUPrimeUnsolved(self):
+        self.cube2("U'")
+        expected = np.array([
+            [[0, 2, 0], [4, 0, 5], [0, 3, 0]],
+            [[1, 5, 1], [3, 1, 2], [1, 4, 1]],
+            [[4, 1, 4], [4, 2, 5], [2, 0, 2]],
+            [[5, 1, 5], [5, 3, 4], [3, 0, 3]],
+            [[3, 1, 3], [3, 4, 2], [4, 0, 4]],
+            [[2, 1, 2], [2, 5, 3], [5, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateFUnsolved(self):
+        self.cube2("F")
+        expected = np.array([
+            [[5, 2, 5], [4, 0, 5], [0, 3, 0]],
+            [[1, 3, 1], [4, 1, 5], [4, 2, 4]],
+            [[2, 4, 2], [0, 2, 1], [2, 5, 2]],
+            [[3, 1, 3], [5, 3, 4], [3, 0, 3]],
+            [[4, 1, 0], [3, 4, 2], [4, 0, 0]],
+            [[1, 1, 5], [2, 5, 3], [1, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateF2Unsolved(self):
+        self.cube2("F2")
+        expected = np.array([
+            [[1, 2, 1], [4, 0, 5], [0, 3, 0]],
+            [[1, 3, 1], [4, 1, 5], [0, 2, 0]],
+            [[2, 0, 2], [5, 2, 4], [2, 1, 2]],
+            [[3, 1, 3], [5, 3, 4], [3, 0, 3]],
+            [[4, 1, 5], [3, 4, 2], [4, 0, 5]],
+            [[4, 1, 5], [2, 5, 3], [4, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())   
+
+    def testRotateFPrimeUnsolved(self):
+        self.cube2("F'")
+        expected = np.array([
+            [[4, 2, 4], [4, 0, 5], [0, 3, 0]],
+            [[1, 3, 1], [4, 1, 5], [5, 2, 5]],
+            [[2, 5, 2], [1, 2, 0], [2, 4, 2]],
+            [[3, 1, 3], [5, 3, 4], [3, 0, 3]],
+            [[4, 1, 1], [3, 4, 2], [4, 0, 1]],
+            [[0, 1, 5], [2, 5, 3], [0, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateBUnsolved(self):
+        self.cube2("B")
+        expected = np.array([
+            [[0, 2, 0], [4, 0, 5], [4, 3, 4]],
+            [[5, 3, 5], [4, 1, 5], [1, 2, 1]],
+            [[2, 1, 2], [4, 2, 5], [2, 0, 2]],
+            [[3, 5, 3], [0, 3, 1], [3, 4, 3]],
+            [[1, 1, 4], [3, 4, 2], [1, 0, 4]],
+            [[5, 1, 0], [2, 5, 3], [5, 0, 0]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateB2Unsolved(self):
+        self.cube2("B2")
+        expected = np.array([
+            [[0, 2, 0], [4, 0, 5], [1, 3, 1]],
+            [[0, 3, 0], [4, 1, 5], [1, 2, 1]],
+            [[2, 1, 2], [4, 2, 5], [2, 0, 2]],
+            [[3, 0, 3], [4, 3, 5], [3, 1, 3]],
+            [[5, 1, 4], [3, 4, 2], [5, 0, 4]],
+            [[5, 1, 4], [2, 5, 3], [5, 0, 4]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateBPrimeUnsolved(self):
+        self.cube2("B'")
+        expected = np.array([
+            [[0, 2, 0], [4, 0, 5], [5, 3, 5]],
+            [[4, 3, 4], [4, 1, 5], [1, 2, 1]],
+            [[2, 1, 2], [4, 2, 5], [2, 0, 2]],
+            [[3, 4, 3], [1, 3, 0], [3, 5, 3]],
+            [[0, 1, 4], [3, 4, 2], [0, 0, 4]],
+            [[5, 1, 1], [2, 5, 3], [5, 0, 1]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateLUnsolved(self):
+        self.cube2("L")
+        expected = np.array([
+            [[2, 2, 0], [4, 0, 5], [2, 3, 0]],
+            [[3, 3, 1], [4, 1, 5], [3, 2, 1]],
+            [[1, 1, 2], [4, 2, 5], [1, 0, 2]],
+            [[3, 1, 0], [5, 3, 4], [3, 0, 0]],
+            [[4, 3, 4], [0, 4, 1], [4, 2, 4]],
+            [[5, 1, 5], [2, 5, 3], [5, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateL2Unsolved(self):
+        self.cube2("L2")
+        expected = np.array([
+            [[1, 2, 0], [4, 0, 5], [1, 3, 0]],
+            [[0, 3, 1], [4, 1, 5], [0, 2, 1]],
+            [[3, 1, 2], [4, 2, 5], [3, 0, 2]],
+            [[3, 1, 2], [5, 3, 4], [3, 0, 2]],
+            [[4, 0, 4], [2, 4, 3], [4, 1, 4]],
+            [[5, 1, 5], [2, 5, 3], [5, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist())
+
+    def testRotateLPrimeUnsolved(self):
+        self.cube2("L'")
+        expected = np.array([
+            [[3, 2, 0], [4, 0, 5], [3, 3, 0]],
+            [[2, 3, 1], [4, 1, 5], [2, 2, 1]],
+            [[0, 1, 2], [4, 2, 5], [0, 0, 2]],
+            [[3, 1, 1], [5, 3, 4], [3, 0, 1]],
+            [[4, 2, 4], [1, 4, 0], [4, 3, 4]],
+            [[5, 1, 5], [2, 5, 3], [5, 0, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateRUnsolved(self):
+        self.cube2("R")
+        expected = np.array([
+            [[0, 2, 3], [4, 0, 5], [0, 3, 3]],
+            [[1, 3, 2], [4, 1, 5], [1, 2, 2]],
+            [[2, 1, 0], [4, 2, 5], [2, 0, 0]],
+            [[1, 1, 3], [5, 3, 4], [1, 0, 3]],
+            [[4, 1, 4], [3, 4, 2], [4, 0, 4]],
+            [[5, 2, 5], [0, 5, 1], [5, 3, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateR2Unsolved(self):
+        self.cube2("R2")
+        expected = np.array([
+            [[0, 2, 1], [4, 0, 5], [0, 3, 1]],
+            [[1, 3, 0], [4, 1, 5], [1, 2, 0]],
+            [[2, 1, 3], [4, 2, 5], [2, 0, 3]],
+            [[2, 1, 3], [5, 3, 4], [2, 0, 3]],
+            [[4, 1, 4], [3, 4, 2], [4, 0, 4]],
+            [[5, 0, 5], [3, 5, 2], [5, 1, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
+
+    def testRotateRPrimeUnsolved(self):
+        self.cube2("R'")
+        expected = np.array([
+            [[0, 2, 2], [4, 0, 5], [0, 3, 2]],
+            [[1, 3, 3], [4, 1, 5], [1, 2, 3]],
+            [[2, 1, 1], [4, 2, 5], [2, 0, 1]],
+            [[0, 1, 3], [5, 3, 4], [0, 0, 3]],
+            [[4, 1, 4], [3, 4, 2], [4, 0, 4]],
+            [[5, 3, 5], [1, 5, 0], [5, 2, 5]]
+        ])
+        self.assertEqual(expected.tolist(),
+                         self.cube2.stickers.astype(int).tolist()) 
 
 if __name__ == "__main__":
     unittest.main()
