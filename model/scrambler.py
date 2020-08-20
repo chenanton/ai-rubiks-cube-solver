@@ -36,17 +36,33 @@ def generateData(m, numFiles=1, filePathBase="data/trainingSets/"):
 
 # Returns a list of random sticker and solution pairs
 def getRandomScrambles(iterations):
-    res = np.zeros((iterations, 55))  # 54 stickers + 1 solution move
-    for i in range(iterations):
-        lastTurn, stickers = randomScramble()
-        res[i, :54] = stickers.flatten()
-        res[i, 54] = lastTurn
-        print("Created training pair #" + str(i))
+    res = np.zeros((0, 55))  # 54 stickers + 1 solution move
+
+    while res.shape[0] < iterations:
+        res = np.concatenate((res, randomScrambles()), axis=0) 
+
     return res
 
 
 # Generates a single random scramble and last move pair
-def randomScramble():
+def randomScrambles():
+
+    # Returns all training data corresponding to solution.
+    # Each move in solution has respective flattened sticker layout 
+    # res.shape = (len(solution), 55)
+    def getDataFromSolution(cube, solution):
+        moves = solution.split()
+        res = np.zeros((len(moves), 55))
+
+        for i in range(len(moves)):
+            row = cube.stickers.flatten()
+            row = np.append(row, [turns.index(moves[i])], axis=0)
+            res[i] = row
+
+            cube(moves[i])
+        
+        return res
+
     cube = Cube()
 
     # Randomly scramble cube in range [minScrambleLen, maxScrambleLen]
@@ -59,37 +75,37 @@ def randomScramble():
         index = random.randint(0, len(turns) - 1)
         cube(turns[index])
 
-    # Get solution
+    # Attempt to get solution
     try:
         solution = solve(toStickerString(cube.stickers))
-        lastMove = tokenizeSolution(solution)
+    # Get another scramble if solution cannot be found
     except RuntimeError:
-        print("Solution not found. Attempting another scramble.\n")
-        lastMove, stickers = randomScramble()
-        return lastMove, stickers
+        print("Solution not found. Attempting another scramble.")
+        return randomScrambles()
 
-    return lastMove, cube.stickers
+    return getDataFromSolution(cube, solution)
 
 
-# Converts a 6x3x3 sticker tensor into a 54 character string to pass into twophase.solve()
+# Converts a 6x3x3 sticker tensor into a 54 character string
+# Then passed into twophase.solve() using Kociemba optimal cube solving algorithm
 # Credit: tcbegley on GitHub: https://github.com/tcbegley/cube-solver
 def toStickerString(stickers):
+
+    # Shifts 6x3x3 tensor from default representation to twophase representation
+    #   (note that twophasel.solve() requires different sticker order)
+    # I.e.  1            0
+    #     4 2 5 3  =>  4 2 1 5
+    #       0            3
+    def toTwoPhase(stickers):
+        return stickers[[1, 5, 2, 0, 4, 3], :, :]
+
+    # Converts index of sticker to face character
+    def indexToFace(index):
+        return stickerToFace[index]
+
     stickerList = toTwoPhase(stickers).flatten()
     stickerList = map(indexToFace, stickerList)
     return "".join(stickerList)
-
-
-# Shifts 6x3x3 tensor from default representation to twophase representation
-# I.e.  1            0
-#     4 2 5 3  =>  4 2 1 5
-#       0            3
-def toTwoPhase(stickers):
-    return stickers[[1, 5, 2, 0, 4, 3], :, :]
-
-
-# Converts index of sticker to face character
-def indexToFace(index):
-    return stickerToFace[index]
 
 
 # Tokenizes solution obtained from solve() in twophase, returns first move only
@@ -100,5 +116,5 @@ def tokenizeSolution(solution):
 
 
 if __name__ == "__main__":
-    data = getRandomScrambles(20)
+    data = randomScrambles()
     print(data)
