@@ -16,17 +16,12 @@ from scrambler import generateData, fileExt
 
 
 # Hyperparameters
-trainingSize = 30000000
+trainingSize = 2000000
 batchSize = 512
 epochs = 10
-numFiles = 20
+numFiles = 1
 
-XBOS = 7
-XEOS = 6
-YBOS = 13
-YEOS = 12
-
-modelName = "rubiks-cube-lstm-{}".format(int(time.time()))
+modelName = "rubiks-cube-nn-{}".format(int(time.time()))
 checkpointPath = "logs/checkpoints/checkpoint.keras"
 
 maxInputLen = 54
@@ -55,7 +50,7 @@ def createModel():
         keras.layers.Dense(units=128, activation="relu", name="dense5"),
         keras.layers.Dense(units=64, activation="relu", name="dense6"),
         keras.layers.Dense(units=32, activation="relu", name="dense7"),
-        keras.layers.Dense(units=12, activation="softmax", name="dense8"),
+        keras.layers.Dense(units=18, activation="softmax", name="dense8"),
     ])
 
     # Compile model
@@ -99,8 +94,8 @@ def predict(stickers, model):
 
 
 if __name__ == "__main__":
-    # generateData(trainingSize, numFiles=15)
-    # trainModel(loadPrev=False)
+    generateData(trainingSize, numFiles=numFiles)
+    trainModel(loadPrev=True)
 
     model = createModel()
     model.load_weights(checkpointPath)

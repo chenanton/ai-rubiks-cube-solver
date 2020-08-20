@@ -28,8 +28,8 @@ stickerToFace = {
 
 def generateData(m, numFiles=1, filePathBase="data/trainingSets/"):
     for i in range(numFiles):
+        print("Dataset for file #" + str(i) + " is generating.")
         data = getRandomScrambles(int(m / numFiles))
-        print("Dataset for file #" + str(i) + " is generated.")
         np.save(filePathBase + str(i) + fileExt, data)
         print("Dataset for file #" + str(i) + " is saved.")
 
@@ -41,6 +41,7 @@ def getRandomScrambles(iterations):
         lastTurn, stickers = randomScramble()
         res[i, :54] = stickers.flatten()
         res[i, 54] = lastTurn
+        print("Created training pair #" + str(i))
     return res
 
 
@@ -48,14 +49,24 @@ def getRandomScrambles(iterations):
 def randomScramble():
     cube = Cube()
 
-    # Randomly scrmble cube in range [minScrambleLen, maxScrambleLen]
+    # Randomly scramble cube in range [minScrambleLen, maxScrambleLen]
     for _ in range(random.randint(minScrambleLen, maxScrambleLen)):
         index = random.randint(0, len(turns) - 1)
         cube(turns[index])
 
+    # Make sure cube isn't solved
+    while cube.isSolved():
+        index = random.randint(0, len(turns) - 1)
+        cube(turns[index])
+
     # Get solution
-    solution = solve(toStickerString(cube.stickers))
-    lastMove = tokenizeSolution(solution)
+    try:
+        solution = solve(toStickerString(cube.stickers))
+        lastMove = tokenizeSolution(solution)
+    except RuntimeError:
+        print("Solution not found. Attempting another scramble.\n")
+        lastMove, stickers = randomScramble()
+        return lastMove, stickers
 
     return lastMove, cube.stickers
 
@@ -89,6 +100,5 @@ def tokenizeSolution(solution):
 
 
 if __name__ == "__main__":
-    solution, stickers = randomScramble()
-    print(stickers)
-    print(solution)
+    data = getRandomScrambles(20)
+    print(data)
