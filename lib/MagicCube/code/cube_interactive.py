@@ -196,7 +196,12 @@ class Cube:
                                                 M.T)
 
     def draw_interactive(self):
-        fig = plt.figure(num="Rubik's Cube Solver", figsize=(5, 5))
+        plt.rcParams['toolbar'] = 'None'
+
+        # manager = plt.get_current_fig_manager()
+        # manager.window.wm_iconbitmap("assets/images/logo.png")
+        
+        fig = plt.figure(num="Rubik's Cube Solver", figsize=(8, 6))
         fig.add_axes(InteractiveCube(self))
         return fig
 
