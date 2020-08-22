@@ -43,6 +43,7 @@ The canonical order is found by doing
 After any rotation, this can be used to quickly restore the cube to
 canonical position.
 """
+N = 3
 
 class Cube:
     """Magic Cube Representation"""
@@ -197,12 +198,21 @@ class Cube:
 
     def draw_interactive(self):
         plt.rcParams['toolbar'] = 'None'
+        plt.rcParams["font.family"] = "monospace"
+        plt.rcParams['font.monospace'] = ['Inconsolata']
 
-        # manager = plt.get_current_fig_manager()
-        # manager.window.wm_iconbitmap("assets/images/logo.png")
+        fig = plt.figure(num="Rubik's Cube Solver", figsize=(16, 9))
+        fig.patch.set_facecolor('#f0f0f0')
         
-        fig = plt.figure(num="Rubik's Cube Solver", figsize=(8, 6))
-        fig.add_axes(InteractiveCube(self))
+        ic = InteractiveCube(self)
+
+        ic.figure.text(0.5, 0.025,
+                         "U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2",
+                         size=20, weight="bold", ha="center")
+
+
+        fig.add_axes(ic)
+
         return fig
 
 
@@ -283,20 +293,24 @@ class InteractiveCube(plt.Axes):
         self._initialize_widgets()
 
         # write some instructions
-        self.figure.text(0.05, 0.05,
-                         "Mouse/arrow keys adjust view\n"
-                         "U/D/L/R/B/F keys turn faces\n"
-                         "(hold shift for counter-clockwise)",
+        self.figure.text(0.025, 0.925,
+                         "Use Mouse, Arrows, and Shift keys to adjust view.\n"
+                         "Press D, U, F, B, L, and R to turn faces clockwise.\n"
+                         "(Hold Shift with key to turn counter-clockwise.)",
                          size=10)
 
     def _initialize_widgets(self):
-        self._ax_reset = self.figure.add_axes([0.75, 0.05, 0.2, 0.075])
+        self._ax_reset = self.figure.add_axes([0.9, 0.925, 0.075, 0.05])
         self._btn_reset = widgets.Button(self._ax_reset, 'Reset View')
         self._btn_reset.on_clicked(self._reset_view)
 
-        self._ax_solve = self.figure.add_axes([0.55, 0.05, 0.2, 0.075])
-        self._btn_solve = widgets.Button(self._ax_solve, 'Solve Cube')
+        self._ax_solve = self.figure.add_axes([0.825, 0.925, 0.075, 0.05])
+        self._btn_solve = widgets.Button(self._ax_solve, 'Reset Cube')
         self._btn_solve.on_clicked(self._solve_cube)
+
+        self._ax_gen = self.figure.add_axes([0.875, 0.025, 0.1, 0.05])
+        self._btn_gen = widgets.Button(self._ax_gen, 'Generate Solution', color="#88ff88", hovercolor="#66dd66")
+        self._btn_gen.on_clicked(self._gen_solution)
 
     def _project(self, pts):
         return project_points(pts, self._current_rot, self._view, [0, 1, 0])
@@ -360,8 +374,10 @@ class InteractiveCube(plt.Axes):
         move_list = self.cube._move_list[:]
         for (face, n, layer) in move_list[::-1]:
             self.rotate_face(face, -n, layer, steps=3)
-            # time.sleep(0.5)
         self.cube._move_list = []
+
+    def _gen_solution(self, *args):
+        print("Generating solution")
 
     def _key_press(self, event):
         """Handler for key press events"""
@@ -457,12 +473,12 @@ class InteractiveCube(plt.Axes):
 
 if __name__ == '__main__':
     import sys
-    try:
-        N = int(sys.argv[1])
-    except:
-        N = 3
+    # try:
+    #     N = int(sys.argv[1])
+    # except:
+    #     N = 3
 
-    c = Cube(N)
+    c = Cube(N=3)
 
     # do a 3-corner swap
     #c.rotate_face('R')
