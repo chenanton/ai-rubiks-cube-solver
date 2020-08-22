@@ -1,10 +1,13 @@
 # Functions related to scrambling the cube.
 
+import sys
+sys.path.append("lib/cube-solver/twophase")
+
 import random
 import copy
 import numpy as np
 
-from cube import Cube  # pylint: disable=import-error
+from model.cube import Cube
 from twophase import solve
 
 minScrambleLen = 1
@@ -129,7 +132,4 @@ def _toStickerString(stickers):
 
 
 if __name__ == "__main__":
-    # data = getRandomScrambles(100)
-    generateData(2000000, numFiles=1)
-    # print(data)
-    # print(data.shape)
+    generateData(100, numFiles=2, filePathBase="tests/testData/")
