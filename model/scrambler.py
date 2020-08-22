@@ -37,35 +37,55 @@ def generateData(m, numFiles=1, filePathBase="data/trainingSets/"):
 # Returns a list of random sticker and solution pairs
 def getRandomScrambles(iterations):
     res = np.zeros((0, 55))  # 54 stickers + 1 solution move
-
     while res.shape[0] < iterations:
-        res = np.concatenate((res, randomScrambles()), axis=0) 
+        print("Training examples generated: " +
+              str(res.shape[0]) + "/" + str(iterations), end="\r")
+        res = np.concatenate((res, randomScrambles()), axis=0)
+
+    return res[:iterations]
+
+
+# Generates a random scramble and last move pairs from one solve() call
+def randomScrambles():
+
+    cube = Cube()
+    cube = _randomlyScrambleCube(cube)
+
+    # Attempt to get solution
+    try:
+        solution = _getSolution(cube)
+    # Get another scramble if solution cannot be found
+    except RuntimeError:
+        print("Solution not found. Attempting another scramble.")
+        return randomScrambles()
+
+    return _getDataFromSolution(cube, solution)
+
+
+# Attempts to get solution of a scrambled cube, may raise RuntimeError
+def _getSolution(cube):
+    return solve(_toStickerString(cube.stickers))
+
+
+# Returns all training data corresponding to solution.
+# Each move in solution has respective flattened sticker layout
+# res.shape = (len(solution), 55)
+def _getDataFromSolution(cube, solution):
+    moves = solution.split()
+    res = np.zeros((len(moves), 55))
+
+    for i in range(len(moves)):
+        row = cube.stickers.flatten()
+        row = np.append(row, [turns.index(moves[i])], axis=0)
+        res[i] = row
+
+        cube(moves[i])
 
     return res
 
 
-# Generates a single random scramble and last move pair
-def randomScrambles():
-
-    # Returns all training data corresponding to solution.
-    # Each move in solution has respective flattened sticker layout 
-    # res.shape = (len(solution), 55)
-    def getDataFromSolution(cube, solution):
-        moves = solution.split()
-        res = np.zeros((len(moves), 55))
-
-        for i in range(len(moves)):
-            row = cube.stickers.flatten()
-            row = np.append(row, [turns.index(moves[i])], axis=0)
-            res[i] = row
-
-            cube(moves[i])
-        
-        return res
-
-    cube = Cube()
-
-    # Randomly scramble cube in range [minScrambleLen, maxScrambleLen]
+# Randomly scramble cube in range [minScrambleLen, maxScrambleLen], and until not solved
+def _randomlyScrambleCube(cube):
     for _ in range(random.randint(minScrambleLen, maxScrambleLen)):
         index = random.randint(0, len(turns) - 1)
         cube(turns[index])
@@ -75,21 +95,14 @@ def randomScrambles():
         index = random.randint(0, len(turns) - 1)
         cube(turns[index])
 
-    # Attempt to get solution
-    try:
-        solution = solve(toStickerString(cube.stickers))
-    # Get another scramble if solution cannot be found
-    except RuntimeError:
-        print("Solution not found. Attempting another scramble.")
-        return randomScrambles()
-
-    return getDataFromSolution(cube, solution)
-
+    return cube
 
 # Converts a 6x3x3 sticker tensor into a 54 character string
 # Then passed into twophase.solve() using Kociemba optimal cube solving algorithm
 # Credit: tcbegley on GitHub: https://github.com/tcbegley/cube-solver
-def toStickerString(stickers):
+
+
+def _toStickerString(stickers):
 
     # Shifts 6x3x3 tensor from default representation to twophase representation
     #   (note that twophasel.solve() requires different sticker order)
@@ -108,13 +121,15 @@ def toStickerString(stickers):
     return "".join(stickerList)
 
 
-# Tokenizes solution obtained from solve() in twophase, returns first move only
-def tokenizeSolution(solution):
-    token = solution.split()[0]   # get only first move
-    res = turns.index(token)
-    return res
+# # Tokenizes solution obtained from solve() in twophase, returns first move only
+# def tokenizeSolution(solution):
+#     token = solution.split()[0]   # get only first move
+#     res = turns.index(token)
+#     return res
 
 
 if __name__ == "__main__":
-    data = randomScrambles()
-    print(data)
+    # data = getRandomScrambles(100)
+    generateData(2000000, numFiles=1)
+    # print(data)
+    # print(data.shape)
