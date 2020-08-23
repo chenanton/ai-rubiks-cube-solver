@@ -12,14 +12,18 @@ cmap = colors.ListedColormap(stickerColors + ["black"])
 
 class Cube:
     sideLen = 3
-    stickers = None
     turnMap = {}
 
     # constructor
-    def __init__(self):
-        self.stickers = np.empty([6, self.sideLen, self.sideLen])
-        for i, _ in enumerate(stickerColors):
-            self.stickers[i, :, :] = np.full([self.sideLen, self.sideLen], i)
+    def __init__(self, stickers=np.zeros([6, 3, 3])):
+        self.stickers = np.empty([6, 3, 3])
+
+        if np.array_equal(np.zeros([6, 3, 3]), stickers):
+            for i, _ in enumerate(stickerColors):
+                self.stickers[i, :, :] = np.full([self.sideLen, self.sideLen], i)
+        else:
+            self.stickers = stickers
+
         self.turnMap = {
             "D": self.rotateD,
             "D2": self.rotateD2,
@@ -224,4 +228,13 @@ class Cube:
 
 
 if __name__ == "__main__":
-    pass
+    c1 = Cube()
+    c1("R2")
+    c1("L2")
+    c1("F2")
+    c1("B2")
+    c1("U2")
+    c1("D2")
+    c2 = Cube(stickers=c1.stickers)
+
+    print(c2.stickers)
