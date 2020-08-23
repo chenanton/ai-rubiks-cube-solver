@@ -6,12 +6,17 @@
         <img src="assets/animations/spinning_cube.gif" alt="Logo" width="180" >
     </a>
     <h2 align="center" >Rubik's Cube Solver</h2>
+    <br />
 
   <p align="center">
     A program which generates machine-learned cube rotations, solving a scrambled Rubik's Cube.
     <br />
   </p>
 </p>
+    <br />
+
+
+![GIF](assets/animations/solve0.gif)
 
 
 <!-- TABLE OF CONTENTS -->
@@ -20,7 +25,7 @@
 
 * [Background](#background)
 * [Outline](#outline)
-* [Demo](#demo)
+* [Getting Started](#getting-started)
 * [Roadmap](#roadmap)
   + [Cube Model](#cube-model)
   + [Scrambling](#scrambling)
@@ -47,16 +52,35 @@ However, we're not here to memorize a bunch of algorithms - **we want a machine 
 
 ## Outline
 
-* This program is written in [**Python**](https://www.python.org/).
-* Neural network implementation is handled with [**TensorFlow**](https://www.tensorflow.org/).
-* Tensor operations are handled with [**NumPy**](https://numpy.org/).
-* GUI is done with [**Matplotlib**](https://matplotlib.org/) and [**MagicCube**](https://github.com/davidwhogg/MagicCube).
-* Unit testing is done with [**UnitTest**](https://docs.python.org/3/library/unittest.html).
+* Written in [**Python**](https://www.python.org/).
+* Neural network implementation with [**TensorFlow**](https://www.tensorflow.org/).
+* Tensor operations with [**NumPy**](https://numpy.org/).
+* GUI with [**Matplotlib**](https://matplotlib.org/) and [**MagicCube**](https://github.com/davidwhogg/MagicCube).
+* Unit testing  with [**UnitTest**](https://docs.python.org/3/library/unittest.html).
 
 <!-- DEMO -->
 
-## Demo
-![GIF](assets/animations/solve0.gif)
+<!-- ## Demo -->
+
+<!-- Getting Started -->
+
+## Getting Started
+
+### Install dependencies
+- Python: [download link](https://www.python.org/downloads/)
+```sh
+pip install tensorflow matplotlib numpy
+```
+
+### Clone repository
+
+```sh
+git clone https://github.com/azychen/rubiks-cube-solver
+```
+### Run program
+```sh
+python -u main.py
+```
 
 <!-- ROADMAP -->
 
@@ -105,7 +129,7 @@ I use a fully-connected deep neural network, with the Adam optimizer for backpro
 
 <p align="center">
     <a href="https://github.com/azychen/rubiks-cube-solver">
-      <img src="assets/images/nn-architecture.png" alt="Model Architecture" width="400" >
+      <img src="./assets/images/nn-architecture.png" alt="Model Architecture" width="400" >
   </a>
 </p>
 
