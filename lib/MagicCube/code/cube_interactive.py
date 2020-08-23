@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from matplotlib import widgets
 from projection import Quaternion, project_points
 
-from model.train import getTrainedModel
+from model.train import predict
 from model.cube import Cube as TrainCube
 
 """
@@ -211,12 +211,6 @@ class Cube:
         fig.patch.set_facecolor('#f0f0f0')
         
         ic = InteractiveCube(self)
-
-        ic.figure.text(0.5, 0.025,
-                         "U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2",
-                         size=20, weight="bold", ha="center")
-
-
         fig.add_axes(ic)
 
         return fig
@@ -298,31 +292,36 @@ class InteractiveCube(plt.Axes):
         self.figure.canvas.mpl_connect('key_release_event',
                                        self._key_release)
 
-        self._initialize_model()
         self._initialize_widgets()
 
         # write some instructions
-        self.figure.text(0.025, 0.925,
+        self.figure.text(0.75, 0.925,
                          "Use Mouse, Arrows, and Shift keys to adjust view.\n"
                          "Press D, U, F, B, L, and R to turn faces clockwise.\n"
                          "(Hold Shift with key to turn counter-clockwise.)",
                          size=10)
+        
+        self.figure.text(0.025, 0.925,
+                         "Rubik's Cube Solver",
+                         size=30, weight="bold")
 
-    def _initialize_model(self):
-        self.model = getTrainedModel()
 
     def _initialize_widgets(self):
-        self._ax_reset = self.figure.add_axes([0.9, 0.925, 0.075, 0.05])
+        self._ax_reset = self.figure.add_axes([0.1, 0.025, 0.075, 0.05])
         self._btn_reset = widgets.Button(self._ax_reset, 'Reset View')
         self._btn_reset.on_clicked(self._reset_view)
 
-        self._ax_solve = self.figure.add_axes([0.825, 0.925, 0.075, 0.05])
+        self._ax_solve = self.figure.add_axes([0.025, 0.025, 0.075, 0.05])
         self._btn_solve = widgets.Button(self._ax_solve, 'Reset Cube')
         self._btn_solve.on_clicked(self._solve_cube)
 
         self._ax_gen = self.figure.add_axes([0.875, 0.025, 0.1, 0.05])
         self._btn_gen = widgets.Button(self._ax_gen, 'Generate Solution', color="#88ff88", hovercolor="#66dd66")
         self._btn_gen.on_clicked(self._gen_solution)
+
+        self._soln_label = self.figure.text(0.5, 0.025,
+                         "",
+                         size=20, weight="bold", ha="center")
 
     def _project(self, pts):
         return project_points(pts, self._current_rot, self._view, [0, 1, 0])
@@ -371,7 +370,6 @@ class InteractiveCube(plt.Axes):
 
     def rotate_face(self, face, turns=1, layer=0, steps=5):
         train_turn = face.upper() + ("'" if turns == -1 else "")
-        print(train_turn)
         self._trainCube(train_turn)
         if not np.allclose(turns, 0):
             for _ in range(steps):
@@ -394,7 +392,11 @@ class InteractiveCube(plt.Axes):
         self._trainCube = TrainCube()
 
     def _gen_solution(self, *args):
-        print(self._trainCube.stickers)
+        if not self._trainCube.isSolved():
+            soln = predict(self._trainCube.stickers)
+            self._soln_label.set_text(soln)
+        else:
+            self._soln_label.set_text("The cube is already solved!")
 
     def _key_press(self, event):
         """Handler for key press events"""
