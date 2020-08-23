@@ -8,10 +8,12 @@
     <h2 align="center" >Rubik's Cube Solver</h2>
 
   <p align="center">
-    A program which generates machine-learned cube rotations, solving any scrambled Rubik's Cube.
+    A program which generates machine-learned cube rotations, solving a scrambled Rubik's Cube.
     <br />
   </p>
 </p>
+
+![GIF](assets/animations/solve0.gif)
 
 <!-- TABLE OF CONTENTS -->
 
