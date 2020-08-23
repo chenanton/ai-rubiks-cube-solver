@@ -1,13 +1,13 @@
 # This file represents the model for the cube. The center white piece is always facing the bottom, and the center green piece is always facing forward.
 
 import copy
-
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import colors
+
+# import matplotlib.pyplot as plt
+# from matplotlib import colors
 
 stickerColors = ["white", "yellow", "green", "blue", "red", "orange"]
-cmap = colors.ListedColormap(stickerColors + ["black"])
+# cmap = colors.ListedColormap(stickerColors + ["black"])
 
 
 class Cube:
@@ -62,29 +62,28 @@ class Cube:
                 return False
         return True
 
+    # # print cube
+    # def plotCube(self, title="Sticker Mapping"):
+    #     plt.close("all")
 
-    # print cube
-    def plotCube(self, title="Sticker Mapping"):
-        plt.close("all")
+    #     mt = np.full((3, 3), 7)
+    #     top = np.concatenate((mt, self.stickers[1], mt, mt), axis=1)
+    #     mid = np.concatenate(
+    #         (self.stickers[4], self.stickers[2], self.stickers[5], self.stickers[3]), axis=1)
+    #     bot = np.concatenate((mt, self.stickers[0], mt, mt), axis=1)
+    #     printRepr = np.concatenate((top, mid, bot), axis=0)
 
-        mt = np.full((3, 3), 7)
-        top = np.concatenate((mt, self.stickers[1], mt, mt), axis=1)
-        mid = np.concatenate(
-            (self.stickers[4], self.stickers[2], self.stickers[5], self.stickers[3]), axis=1)
-        bot = np.concatenate((mt, self.stickers[0], mt, mt), axis=1)
-        printRepr = np.concatenate((top, mid, bot), axis=0)
-
-        plt.imshow(printRepr, interpolation='nearest', cmap=cmap)
-        ax = plt.gca()
-        ax.axes.xaxis.set_ticklabels([])
-        ax.axes.yaxis.set_ticklabels([])
-        ax.set_xticks(np.arange(-0.5, 11.5, 1))
-        ax.set_yticks(np.arange(-0.5, 8.5, 1))
-        plt.title(title)
-        plt.tight_layout()
-        plt.grid(b=True, which='major', color='#000000',
-                 linestyle='-', linewidth=4)
-        plt.show()
+    #     plt.imshow(printRepr, interpolation='nearest', cmap=cmap)
+    #     ax = plt.gca()
+    #     ax.axes.xaxis.set_ticklabels([])
+    #     ax.axes.yaxis.set_ticklabels([])
+    #     ax.set_xticks(np.arange(-0.5, 11.5, 1))
+    #     ax.set_yticks(np.arange(-0.5, 8.5, 1))
+    #     plt.title(title)
+    #     plt.tight_layout()
+    #     plt.grid(b=True, which='major', color='#000000',
+    #              linestyle='-', linewidth=4)
+    #     plt.show()
 
 
     # ROTATIONS
@@ -92,13 +91,7 @@ class Cube:
     # rotate bottom face clockwise
     def rotateD(self):
         self.stickers[0] = np.rot90(self.stickers[0], axes=(1, 0))
-
-        tmp = copy.copy(self.stickers[4, 2, :])
-        self.stickers[4, 2, :] = copy.copy(self.stickers[3, 2, :])
-        self.stickers[3, 2, :] = copy.copy(self.stickers[5, 2, :])
-        self.stickers[5, 2, :] = copy.copy(self.stickers[2, 2, :])
-        self.stickers[2, 2, :] = tmp
-
+        self.stickers[[4, 3, 5, 2], 2] = self.stickers[[3, 5, 2, 4], 2]
 
     # rotate bottom face 180 degrees
     def rotateD2(self):
@@ -115,13 +108,7 @@ class Cube:
     # rotate top face clockwise
     def rotateU(self):
         self.stickers[1] = np.rot90(self.stickers[1], axes=(1, 0))
-
-        tmp = copy.copy(self.stickers[4, 0, :])
-        self.stickers[4, 0, :] = copy.copy(self.stickers[2, 0, :])
-        self.stickers[2, 0, :] = copy.copy(self.stickers[5, 0, :])
-        self.stickers[5, 0, :] = copy.copy(self.stickers[3, 0, :])
-        self.stickers[3, 0, :] = tmp
-
+        self.stickers[[4, 2, 5, 3], 0] = self.stickers[[2, 5, 3, 4], 0]
 
     # rotate top face 180 degrees
     def rotateU2(self):
@@ -229,22 +216,4 @@ class Cube:
 
 if __name__ == "__main__":
     c1 = Cube()
-    c1("R2")
-    c1("L2")
-    c1("F2")
-    c1("B2")
-    c1("U2")
-    c1("D2")
-    c2 = Cube(stickers=c1.stickers)
-
-    print(c2.stickers)
-
-    c1("R2")
-    c1("L2")
-    c1("F2")
-    c1("B2")
-    c1("U2")
-    c1("D2")
-
     print(c1.stickers)
-    print(c2.stickers)
