@@ -1,19 +1,15 @@
 <!-- PROJECT LOGO -->
+
 <br />
 <p align="center">
     <a href="https://github.com/azychen/rubiks-cube-solver">
-        <img src="assets/images/logo.png" alt="Logo" width="180" >
+        <img src="assets/animations/spinning_cube.gif" alt="Logo" width="180" >
     </a>
     <h2 align="center" >Rubik's Cube Solver</h2>
 
   <p align="center">
     A program which generates machine-learned cube rotations, solving any scrambled Rubik's Cube.
     <br />
-    <a href="https://github.com/azychen/rubiks-cube-solver">View Demo</a>
-    ·
-    <a href="https://github.com/azychen/rubiks-cube-solver/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/azychen/rubiks-cube-solver/issues">Request Feature</a>
   </p>
 </p>
 
