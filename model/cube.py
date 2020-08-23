@@ -15,7 +15,6 @@ class Cube:
     stickers = None
     turnMap = {}
 
-
     # constructor
     def __init__(self):
         self.stickers = np.empty([6, self.sideLen, self.sideLen])
@@ -225,7 +224,4 @@ class Cube:
 
 
 if __name__ == "__main__":
-   cube = Cube()
-   print(cube.isSolved())
-   cube("R2")
-   print(cube.isSolved())
+    pass

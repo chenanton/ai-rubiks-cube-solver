@@ -4,11 +4,17 @@
 # Adapted from cube code written by David Hogg
 #   https://github.com/davidwhogg/MagicCube
 
+import sys
+sys.path.append("model")
+
 import time
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import widgets
 from projection import Quaternion, project_points
+
+from model.train import getTrainedModel
+from model.cube import Cube as TrainCube
 
 """
 Sticker representation
@@ -229,6 +235,8 @@ class InteractiveCube(plt.Axes):
         else:
             self.cube = Cube(cube)
 
+        self._trainCube = TrainCube()
+
         self._view = view
         self._start_rot = Quaternion.from_v_theta((1, -1, 0),
                                                   -np.pi / 6)
@@ -290,6 +298,7 @@ class InteractiveCube(plt.Axes):
         self.figure.canvas.mpl_connect('key_release_event',
                                        self._key_release)
 
+        self._initialize_model()
         self._initialize_widgets()
 
         # write some instructions
@@ -298,6 +307,9 @@ class InteractiveCube(plt.Axes):
                          "Press D, U, F, B, L, and R to turn faces clockwise.\n"
                          "(Hold Shift with key to turn counter-clockwise.)",
                          size=10)
+
+    def _initialize_model(self):
+        self.model = getTrainedModel()
 
     def _initialize_widgets(self):
         self._ax_reset = self.figure.add_axes([0.9, 0.925, 0.075, 0.05])
@@ -358,6 +370,9 @@ class InteractiveCube(plt.Axes):
         self._current_rot = self._current_rot * rot
 
     def rotate_face(self, face, turns=1, layer=0, steps=5):
+        train_turn = face.upper() + ("'" if turns == -1 else "")
+        print(train_turn)
+        self._trainCube(train_turn)
         if not np.allclose(turns, 0):
             for _ in range(steps):
                 self.cube.rotate_face(face, turns * 1. / steps,
@@ -376,8 +391,10 @@ class InteractiveCube(plt.Axes):
             self.rotate_face(face, -n, layer, steps=3)
         self.cube._move_list = []
 
+        self._trainCube = TrainCube()
+
     def _gen_solution(self, *args):
-        print("Generating solution")
+        print(self._trainCube.stickers)
 
     def _key_press(self, event):
         """Handler for key press events"""
