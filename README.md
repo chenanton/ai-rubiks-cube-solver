@@ -129,7 +129,7 @@ I use a fully-connected deep neural network, with the Adam optimizer for backpro
 
 <p align="center">
     <a href="https://github.com/azychen/rubiks-cube-solver">
-      <img src="./assets/images/nn-architecture.png" alt="Model Architecture" width="400" >
+      <img src="assets/images/nn-architecture.png" alt="Model Architecture" width="320" >
   </a>
 </p>
 
@@ -155,7 +155,7 @@ model.compile(loss="sparse_categorical_crossentropy",
 
 After training on over 6 million training examples, the network has a validation accuracy of approximately 70%. In other words, the model can predict the next move in the solution a considerable amount of the time. In practice, this means that the model is incredibly accuracy when it comes to predicting solution sequences for scrambles less than 6-7 moves long. However, as scramble length increases beyond this, the model struggles to find accurate moves to solve the cube.
 
-To improve results, it may suffice to simply generate more data to be fed into the model. For some perspective 
+To improve results, it may suffice to simply generate more data to be fed into the model. 
 
 <!-- 
 
