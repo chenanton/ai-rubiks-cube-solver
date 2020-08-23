@@ -12,14 +12,14 @@ import time
 from tensorflow import keras
 from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input, RepeatVector
 
-from scrambler import generateData, fileExt
+from scrambler import generateData, fileExt, turns
 
 
 # Hyperparameters
 trainingSize = 2000000
 batchSize = 512
 epochs = 10
-numFiles = 1
+numFiles = 3
 
 modelName = "rubiks-cube-nn-{}".format(int(time.time()))
 checkpointPath = "logs/checkpoints/checkpoint.keras"
@@ -29,8 +29,8 @@ hiddenSize = 128
 
 
 # Loads data from specified input and output files, returns features and labels
-def loadData(numFiles=0, filePathBase="data/trainingSets/"):
-    data = np.load(filePathBase + str(numFiles) + fileExt).astype("float32")
+def loadData(fileNum=0, filePathBase="data/trainingSets/"):
+    data = np.load(filePathBase + str(fileNum) + fileExt).astype("float32")
     
     X = data[:, :54]
     Y = data[:, 54]
@@ -59,6 +59,11 @@ def createModel():
 
     return model
 
+# Returns previously trained model
+def getTrainedModel():
+    model = createModel()
+    model.load_weights(checkpointPath)
+    return model
 
 # Trains model
 def trainModel(loadPrev=True):
@@ -88,35 +93,27 @@ def getCallbacks():
 
 
 # Predicts solution from single sticker mapping
-def predict(stickers, model):
-    pred = model.predict(stickers)
-    return pred
+# Input size: 6x3x3 tensor
+# Returns: index of move
+def predict(stickers):
+    flattened = np.reshape(stickers, (1, 54))
+    pred = np.argmax(getTrainedModel().predict(flattened), axis=-1)[0]
+    return turns[pred]
 
 
 if __name__ == "__main__":
-    generateData(trainingSize, numFiles=numFiles)
-    trainModel(loadPrev=True)
+    # generateData(trainingSize, numFiles=numFiles)
+    # trainModel(loadPrev=True)
 
-    model = createModel()
-    model.load_weights(checkpointPath)
-    # encoderModel.load_weights(checkpointPath, by_name=True)
-    # decoderModel.load_weights(checkpointPath, by_name=True)
+    model = getTrainedModel()
 
-
-    X, Y = loadData(10)
+    X, Y = loadData(0)
     X = X[:20]
     Y = Y[:20]
 
     print("Input: ")
     print(X)
     print("Prediction: ")
-    print(np.argmax(predict(X, model), axis=-1))
+    print(predict(X))
     print("Actual: ")
-    print(Y)
-
-    # X, Y = loadData()
-    # preds = np.argmax(model.predict(X), axis=-1)
-    # print("Predictions: ")
-    # print(preds)
-    # print("Actual: ")
-    # print(Y["decDense"].astype(int))
+    print(Y.astype(int))
