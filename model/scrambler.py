@@ -132,4 +132,4 @@ def _toStickerString(stickers):
 
 
 if __name__ == "__main__":
-    generateData(100, numFiles=2, filePathBase="tests/testData/")
+    generateData(2000000, numFiles=1)

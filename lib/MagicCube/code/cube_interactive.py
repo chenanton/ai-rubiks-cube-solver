@@ -204,10 +204,11 @@ class Cube:
 
     def draw_interactive(self):
         plt.rcParams['toolbar'] = 'None'
+        # plt.rcParams["font.family"] = "sans-serif"
         plt.rcParams["font.family"] = "monospace"
         plt.rcParams['font.monospace'] = ['Inconsolata']
 
-        fig = plt.figure(num="Rubik's Cube Solver", figsize=(16, 9))
+        fig = plt.figure(num="Rubik's Cube Solver", figsize=(16, 8))
         fig.patch.set_facecolor('#f0f0f0')
         
         ic = InteractiveCube(self)
@@ -303,16 +304,16 @@ class InteractiveCube(plt.Axes):
         
         self.figure.text(0.025, 0.925,
                          "Rubik's Cube Solver",
-                         size=30, weight="bold")
+                         size=30, weight="heavy")
 
 
     def _initialize_widgets(self):
         self._ax_reset = self.figure.add_axes([0.1, 0.025, 0.075, 0.05])
-        self._btn_reset = widgets.Button(self._ax_reset, 'Reset View')
+        self._btn_reset = widgets.Button(self._ax_reset, 'Reset View', color="#aaaaaa")
         self._btn_reset.on_clicked(self._reset_view)
 
         self._ax_solve = self.figure.add_axes([0.025, 0.025, 0.075, 0.05])
-        self._btn_solve = widgets.Button(self._ax_solve, 'Reset Cube')
+        self._btn_solve = widgets.Button(self._ax_solve, 'Reset Cube', color="#aaaaaa")
         self._btn_solve.on_clicked(self._solve_cube)
 
         self._ax_gen = self.figure.add_axes([0.875, 0.025, 0.1, 0.05])
@@ -395,8 +396,11 @@ class InteractiveCube(plt.Axes):
         if not self._trainCube.isSolved():
             soln = predict(self._trainCube.stickers)
             self._soln_label.set_text(soln)
+        elif self._soln_label.get_text() == "The cube is already solved!":
+            self._soln_label.set_text("")
         else:
             self._soln_label.set_text("The cube is already solved!")
+
 
     def _key_press(self, event):
         """Handler for key press events"""

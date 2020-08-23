@@ -10,9 +10,9 @@ import numpy as np
 import time
 
 from tensorflow import keras
-from tensorflow.keras.layers import LSTM, Embedding, Dense, Dropout, TimeDistributed, Bidirectional, Attention, Input, RepeatVector
-
+from tensorflow.keras.layers import Dense, Input
 from scrambler import generateData, fileExt, turns
+from model.cube import Cube
 
 
 # Hyperparameters
@@ -96,8 +96,26 @@ def getCallbacks():
 # Input size: 6x3x3 tensor
 # Returns: index of move
 def predict(stickers):
-    flattened = np.reshape(stickers, (1, 54))
-    pred = np.argmax(getTrainedModel().predict(flattened), axis=-1)[0]
+    c = Cube(stickers)
+    s = np.reshape(c.stickers, (1, 54)) 
+    soln = ""
+    count = 0
+
+    while not c.isSolved():
+        count += 1
+        if count > 50:
+            return "Solution could not be found."
+        pred = predictMove(s, getTrainedModel())
+        soln += " " + pred
+        c(pred)
+
+    return soln
+
+# Predicts single move from single sticker mapping via model
+# Input size: 6x3x3 tensor
+# Returns: index of move
+def predictMove(stickers, model):
+    pred = np.argmax(model.predict(stickers), axis=-1)[0]
     return turns[pred]
 
 

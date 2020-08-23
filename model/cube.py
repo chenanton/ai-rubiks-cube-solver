@@ -22,7 +22,7 @@ class Cube:
             for i, _ in enumerate(stickerColors):
                 self.stickers[i, :, :] = np.full([self.sideLen, self.sideLen], i)
         else:
-            self.stickers = stickers
+            self.stickers = copy.copy(stickers)
 
         self.turnMap = {
             "D": self.rotateD,
@@ -237,4 +237,14 @@ if __name__ == "__main__":
     c1("D2")
     c2 = Cube(stickers=c1.stickers)
 
+    print(c2.stickers)
+
+    c1("R2")
+    c1("L2")
+    c1("F2")
+    c1("B2")
+    c1("U2")
+    c1("D2")
+
+    print(c1.stickers)
     print(c2.stickers)
