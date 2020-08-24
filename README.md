@@ -5,11 +5,11 @@
     <a href="https://github.com/azychen/rubiks-cube-solver">
         <img src="assets/animations/spinning_cube.gif" alt="Logo" width="180" >
     </a>
-    <h2 align="center" >Rubik's Cube Solver</h2>
+    <h2 align="center" >AI Rubik's Cube Solver</h2>
     <br />
 
   <p align="center">
-    A program which generates machine-learned cube rotations, solving a scrambled Rubik's Cube.
+    A program which generates a sequence of machine-learned cube turns, solving a scrambled Rubik's Cube.
     <br />
   </p>
 </p>
@@ -127,11 +127,13 @@ With access to any scramble's respective solution, we can train a model, where t
 
 I use a fully-connected deep neural network, with the Adam optimizer for backpropagation and parameter updating, along with a sparse categorical cross-entropy loss. Here's a look at the structure:
 
-<p align="center">
+![Model Architecture](assets/images/nn-architecture.png)
+
+<!-- <p align="center">
     <a href="https://github.com/azychen/rubiks-cube-solver">
       <img src="assets/images/nn-architecture.png" alt="Model Architecture" width="320" >
   </a>
-</p>
+</p> -->
 
 And here's the implementation with the Keras sequential model:
 
