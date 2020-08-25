@@ -19,7 +19,7 @@ from model.cube import Cube
 trainingSize = 2000000
 batchSize = 512
 epochs = 10
-numFiles = 3
+numFiles = 4
 
 modelName = "rubiks-cube-nn-{}".format(int(time.time()))
 checkpointPath = "logs/checkpoints/checkpoint.keras"
@@ -121,7 +121,7 @@ def predictMove(stickers, model):
 
 if __name__ == "__main__":
     # generateData(trainingSize, numFiles=numFiles)
-    # trainModel(loadPrev=True)
+    trainModel(loadPrev=True)
 
     model = getTrainedModel()
 
