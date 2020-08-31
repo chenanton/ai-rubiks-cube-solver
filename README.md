@@ -1,5 +1,4 @@
 <!-- PROJECT LOGO -->
-
 <br />
 <p align="center">
     <a href="https://github.com/azychen/rubiks-cube-solver">
@@ -7,7 +6,6 @@
     </a>
     <h2 align="center" >AI Rubik's Cube Solver</h2>
     <br />
-
   <p align="center">
     A program which generates a sequence of machine-learned cube turns, solving a scrambled Rubik's Cube.
     <br />
@@ -15,9 +13,7 @@
 </p>
     <br />
 
-
 ![GIF](assets/animations/solve0.gif)
-
 
 <!-- TABLE OF CONTENTS -->
 
@@ -32,6 +28,7 @@
   + [Generating Data](#generating-data)
   + [Training Model](#training-model)
 * [Results and Discussion](#results-and-discussion)
+
 <!-- * [Conclusion](#conclusion) -->
 <!-- * [Contact](#contact) -->
 <!-- * [Acknowledgements](#acknowledgements) -->
@@ -67,18 +64,22 @@ However, we're not here to memorize a bunch of algorithms - **we want a machine 
 ## Getting Started
 
 ### Install dependencies
-- Python: [download link](https://www.python.org/downloads/)
-```sh
+
+* Python: [download link](https://www.python.org/downloads/)
+
+``` sh
 pip install tensorflow matplotlib numpy
 ```
 
 ### Clone repository
 
-```sh
+``` sh
 git clone https://github.com/azychen/rubiks-cube-solver
 ```
+
 ### Run program
-```sh
+
+``` sh
 python -u main.py
 ```
 
@@ -127,17 +128,18 @@ With access to any scramble's respective solution, we can train a model, where t
 
 I use a fully-connected deep neural network, with the Adam optimizer for backpropagation and parameter updating, along with a sparse categorical cross-entropy loss. Here's a look at the structure:
 
-![Model Architecture](assets/images/nn-architecture.png)
-
+<img src="assets/images/nn-architecture.png" alt="Model Architecture" width="300"/>
 <!-- <p align="center">
+
     <a href="https://github.com/azychen/rubiks-cube-solver">
       <img src="assets/images/nn-architecture.png" alt="Model Architecture" width="320" >
+
   </a>
 </p> -->
 
 And here's the implementation with the Keras sequential model:
 
-```python
+``` python
 # Create layers
 model = keras.Sequential([
     keras.layers.Input(shape=54),
@@ -152,10 +154,9 @@ model.compile(loss="sparse_categorical_crossentropy",
               optimizer="adam", metrics=["accuracy"])
 ```
 
-
 ## Results and Discussion
 
-After training on over 6 million training examples, the network has a validation accuracy of approximately 70%. In other words, the model can predict the next move in the solution a considerable amount of the time. In practice, this means that the model is incredibly accuracy when it comes to predicting solution sequences for scrambles less than 6-7 moves long. However, as scramble length increases beyond this, the model struggles to find accurate moves to solve the cube.
+After training on over 8 million training examples, the network has a validation accuracy of approximately 70%. In other words, the model can predict the next move in the solution a considerable amount of the time. In practice, this means that the model is incredibly accuracy when it comes to predicting solution sequences for scrambles less than 6-7 moves long. However, as scramble length increases beyond this, the model struggles to find accurate moves to solve the cube.
 
 To improve results, it may suffice to simply generate more data to be fed into the model. 
 
